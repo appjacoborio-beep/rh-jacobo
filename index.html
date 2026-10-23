@@ -140,6 +140,55 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;letter-spacing:-.01em}
 .auth-t{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand-2);margin-bottom:8px}
 .m-err{background:var(--err-bg);color:var(--err);font-weight:700;font-size:14px;border-radius:10px;padding:10px 12px;margin-bottom:12px;text-align:left}
 .btn.danger{background:var(--err)}
+.cum-hoy{display:block;width:100%;text-align:left;border:0;margin:-6px 0 16px;padding:12px 16px;border-radius:14px;background:linear-gradient(90deg,#fde6f3,#fff1d6);color:#7a1550;font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.cu-nav{max-width:520px;margin-bottom:12px}
+.cu-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.cu-dia{flex:none;width:48px;height:48px;border-radius:12px;background:#fde6f3;color:#a3195b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:19px;line-height:1}
+.cu-dia small{font-size:10px;font-weight:700;text-transform:uppercase;margin-top:2px}
+.cu-row.hoy{border-color:#e46aa6;box-shadow:0 0 0 3px #fde6f3}
+.cu-row.paso{opacity:.6}
+.cu-info{flex:1;min-width:0}
+.cu-info b{display:block}
+.cu-info small{color:var(--muted);font-size:13px}
+.cu-tag{flex:none;font-size:12px;font-weight:800;color:#a3195b;background:#fde6f3;border-radius:99px;padding:3px 10px}
+.cu-sin{color:var(--muted);font-size:13px;margin-top:14px}
+.dos-mini{display:flex;gap:8px}
+.dos-mini select{flex:1}
+.em-escala{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
+.em-escala summary{cursor:pointer;font-weight:700;color:var(--brand)}
+.em-escala p{margin-top:6px;color:var(--muted)}
+.em-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.em-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.em-card.gana{border-color:#e0a100;box-shadow:0 0 0 3px #fff1d6}
+.em-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.em-head div{flex:1;min-width:0}
+.em-head b{display:block}
+.em-head small{color:var(--muted);font-size:12px}
+.em-tot{flex:none;font-size:22px;font-weight:800;color:var(--brand);text-align:right;line-height:1}
+.em-tot small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.em-ref{font-size:12px;color:#9a6200;background:#fff7e6;border-radius:8px;padding:4px 8px;margin-bottom:6px}
+.em-cri{display:flex;align-items:center;gap:6px;padding:4px 0;border-top:1px dashed var(--line)}
+.em-cri span{flex:1;font-size:13px}
+.em-cri span small{color:var(--muted)}
+.em-btns{display:flex;gap:3px}
+.em-btns button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:13px;color:var(--muted);cursor:pointer}
+.em-btns button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.em-res{margin-top:14px}
+.em-res h3{margin-bottom:8px}
+.em-res label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px}
+.em-res select,.em-res textarea{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:15px;color:var(--ink)}
+.em-res textarea{min-height:70px;resize:vertical}
+.em-res .actions{margin-top:10px}
+.cp-tit{font-size:30px;text-align:center;margin:16px 0 4px;color:#a3195b}
+.cp-sub{text-align:center;font-size:14px;margin-bottom:16px}
+.cp-tab{width:100%;border-collapse:collapse;font-size:15px}
+.cp-tab td{border-bottom:1px solid #f0c6dc;padding:8px 10px}
+.cp-tab td:first-child{width:80px;font-weight:800;color:#a3195b;font-size:18px;text-align:center}
+.cp-pie{text-align:center;font-size:20px;margin-top:22px;color:#a3195b;font-weight:800}
+.em-ptab th{font-size:9px}
+.em-ptab td{text-align:center}
+.em-ptab td:nth-child(2){text-align:left}
+.em-ptab tr.gana td{background:#fff4d6;font-weight:800}
 .pie-ini{text-align:center;margin-top:22px}
 .linkbtn{background:none;border:0;color:var(--brand);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:8px 12px;border-radius:8px}
 .linkbtn:hover{background:var(--cafe-bg)}
@@ -473,6 +522,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   <!-- INICIO -->
   <section class="view" id="v-inicio">
     <div class="title"><h2>¿Qué se necesita hoy?</h2><p>Herramientas de Recursos Humanos para las tres sucursales.</p></div>
+    <button class="cum-hoy" id="cum-hoy" hidden></button>
     <div class="cards">
       <button class="cardbtn hoycard" id="irHoy">
         <span class="tag">🔒 RH y dueños</span><span class="ic" style="background:#fff1d6">📊</span><h3>Hoy</h3><p>Quién trabaja, vacaciones, incidencias, aniversarios y alertas del día.</p>
@@ -489,6 +539,12 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
       </button>
       <button class="cardbtn" id="irVac">
         <span class="ic" style="background:#e2f2fc">🌴</span><h3>Vacaciones</h3><p>Días por antigüedad, programar vacaciones y calendario de quién está ausente.</p>
+      </button>
+      <button class="cardbtn" id="irCum">
+        <span class="ic" style="background:#fde6f3">🎂</span><h3>Cumpleaños</h3><p>Quién cumple años cada mes, por sucursal. Cartel del mes para imprimir.</p>
+      </button>
+      <button class="cardbtn" id="irEmp">
+        <span class="ic" style="background:#fff1d6">🏆</span><h3>Empleado del mes</h3><p>Evaluación mensual con la rúbrica de Jacobo y formato para firmar.</p>
       </button>
       <button class="cardbtn" id="irInc">
         <span class="ic" style="background:#fde6e9">📋</span><h3>Incidencias</h3><p>Faltas, retardos, permisos, incapacidades y llamados de atención. Conectado con horarios.</p>
@@ -618,6 +674,44 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div class="search"><input id="pq" type="search" placeholder="Buscar colaborador por nombre, puesto o sucursal…" autocomplete="off"></div>
     <div class="pills" id="ppills"></div>
     <div class="list" id="plist"></div>
+  </section>
+
+  <!-- CUMPLEAÑOS -->
+  <section class="view" id="v-cumple" hidden>
+    <div class="title prow">
+      <div><h2>Cumpleaños</h2><p>Quién cumple años en el mes. Las fechas se capturan en Colaboradores.</p></div>
+      <button class="btn ghost" id="cu-print" style="flex:none">🖨️ Imprimir cartel del mes</button>
+    </div>
+    <div class="calhead cu-nav">
+      <button class="nav" id="cu-prev" aria-label="Mes anterior">‹</button>
+      <h3 id="cu-mes"></h3>
+      <button class="hoybtn" id="cu-hoy">Este mes</button>
+      <button class="nav" id="cu-next" aria-label="Mes siguiente">›</button>
+    </div>
+    <div class="pills" id="cu-pills"></div>
+    <div class="list" id="cu-list"></div>
+    <p class="cu-sin" id="cu-sin"></p>
+  </section>
+
+  <!-- EMPLEADO DEL MES -->
+  <section class="view" id="v-empleado" hidden>
+    <div class="title prow">
+      <div><h2>Empleado del mes</h2><p>Calificar a cada colaborador de 1 a 5 en cada criterio. La app suma los puntos (máximo 100).</p></div>
+      <button class="btn ghost" id="em-print" style="flex:none">🖨️ Imprimir formato</button>
+    </div>
+    <div class="calhead cu-nav">
+      <button class="nav" id="em-prev" aria-label="Mes anterior">‹</button>
+      <h3 id="em-mes"></h3>
+      <button class="hoybtn" id="em-hoy">Este mes</button>
+      <button class="nav" id="em-next" aria-label="Mes siguiente">›</button>
+    </div>
+    <div class="pills" id="em-pills"></div>
+    <details class="em-escala"><summary>Escala de evaluación</summary>
+      <p><b>5</b> Excelente: supera las expectativas · <b>4</b> Muy bueno: cumple y destaca · <b>3</b> Bueno: cumple con lo esperado · <b>2</b> En desarrollo: necesita mejorar · <b>1</b> Insuficiente: requiere mejorar considerablemente.</p>
+    </details>
+    <div id="em-estado"></div>
+    <div class="em-grid" id="em-list"></div>
+    <div class="panel em-res" id="em-res"></div>
   </section>
 
   <!-- VACACIONES -->
@@ -928,6 +1022,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <div class="dos">
             <label>Fecha de ingreso<input type="date" id="c-ing"></label>
             <label>ID de gafete<input id="c-gafete" placeholder="Ej. JAC0078" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label>
+            <label>Cumpleaños<span class="dos-mini"><select id="c-cdia" aria-label="Día"><option value="">Día</option></select><select id="c-cmes" aria-label="Mes"><option value="">Mes</option></select></span></label>
             <label>Día de descanso<select id="c-desc"><option value="">Sin día fijo</option><option>Domingo</option><option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option></select></label>
           </div>
           <button type="button" class="link baja-link" id="c-ir-baja">Dar de baja a este colaborador</button>
@@ -984,7 +1079,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
 /* =================== CONFIGURACIÓN =================== */
 // Pegar aquí la URL de la aplicación web de Apps Script (termina en /exec).
 // Si se deja vacía, la página funciona en modo prueba (solo en este dispositivo).
-const API_URL = 'https://script.google.com/macros/s/AKfycbz79VxO4G6FF7yKYDffHeaBxlg2NCZ0d4RUuxIan6KEo7e1tG0j30lx5Voi-0fQSP_ftQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxaSRK00_uOLodFMqseogkns4AVVuAM_ScuIiKDkFbQtTBuzxmpxAe7EeJfCpXWofWoSw/exec';
 
 const TZ = 'America/Tijuana';
 const SUCURSALES = ['Río', 'Otay', 'Monarca'];
@@ -1103,6 +1198,8 @@ const remote = {
   vacaciones(){ return this.get({action:'vacaciones'}); },
   autorizarAcceso(d){ return this.post({action:'autorizarAcceso', ...d}); },
   cambiarContrasena(d){ return this.post({action:'cambiarContrasena', ...d}); },
+  empleadoMes(mes){ return this.get({action:'empleadoMes', mes}); },
+  guardarEvaluacion(d){ return this.post({action:'guardarEvaluacion', ...d}); },
   restablecerContrasena(d){ return this.post({action:'restablecerContrasena', ...d}); },
   incidencias(){ return this.get({action:'incidencias'}); },
   registrarIncidencia(d){ return this.post({action:'registrarIncidencia', ...d}); },
@@ -1119,6 +1216,32 @@ const remote = {
   registrar(d){ return this.post({action:'registrar', ...d}); },
   cancelar(d){ return this.post({action:'cancelar', ...d}); }
 };
+// Cumpleaños (mes-día) para el modo prueba; en producción vienen de la hoja Colaboradores
+const CUMPLES_DEMO = {
+  'Yatziri Calderas Garduño': '01-10', 'Amayrani Irasema Santoyo Guadalupe': '03-13', 'Florencio Nava Sanchez': '03-14',
+  'Olga Alejandra Borboa Vega': '03-19', 'Juan Carlos Arrieta Hernandez': '03-22', 'Val Cristian Prieto Batalla': '03-28',
+  'Nadia Araceli Arroyo Sedano': '04-04', 'Jose Angel Santillanes Briseño': '05-05', 'Jonathan del Angel Duarte Garcia': '05-12',
+  'Leonardo Jahid Reyes Flores': '05-14', 'Daniel Chavez Moreno': '05-18', 'Diego Saldaña Rodriguez': '07-03',
+  'Ruth Aguilar Ramirez': '07-29', 'Margeri Geraldine Muñoz Castaño': '08-05', 'Kevin Velez Peñaloza': '08-25',
+  'Alberto Emmanuel Perez Garay': '11-02', 'Abraham Juarez Cid': '11-04', 'Abraham Najera Mojarro': '11-17',
+  'Victor Manuel Reyes Flores': '11-26',
+  'Miguel Ramirez Morales': '06-18', 'Arturo Gabriel Navarro': '07-02', 'Kenia Jazmin Gamboa Cid': '05-14',
+  'Manuel Alvarez Bucio': '02-04', 'Tania Guadalupe Montes Salguero': '05-20', 'Fernanda Romero Moreno': '07-01',
+  'Rosa Elena Meza Sebastian': '06-29', 'Katia Yamileth Cayetano Dominguez': '07-15', 'Monserrat Ramirez Moreno': '08-07',
+  'Margarita Tovar Montes': '05-07', 'Maura Vanessa Franco Siordia': '02-01', 'Alejandro Torres Juarez': '08-22',
+  'Diego Tepatlan Sayago': '05-28', 'Ana Luisa Ayala Hernández': '01-18', 'Filiberto Reyes Tadeo': '04-30',
+  'Elsa Kariana Quiroga Cid': '04-03', 'Johana Alexandra Castro Rodrig': '07-13', 'Arturo Corzo Gomez': '01-19',
+  'Reyna López Figueroa': '01-30', 'Sonia Ibeth Perez Gutierrez': '10-11',
+  'Carla Vanessa Caballero Cid': '02-01', 'Jonathan Chavez Moreno': '07-02', 'David Enrique Bello Hernandez': '12-29',
+  'Agustin Espiritu Valadez': '02-01', 'Gadiel Emanuel Aguilar Ramirez': '03-10', 'Ramiro Rey Perez Robles': '02-24',
+  'Luis Alberto Guzmán García': '04-15', 'Nayely Aguilera Astorga': '08-25', 'Karla Paola García Medina': '06-06',
+  'Jorge Luis Lucido': '04-09', 'Jose Francisco Cid Contreras': '03-03', 'Enrique Jinez Tetla': '12-17',
+  'Victor Manuel Perez Alonso': '01-17', 'Imelda Chavez Mendoza': '11-17', 'Wendy Mariano Alonso': '12-08',
+  'Jose Andres Rolon Pineda': '09-19', 'Fernando Hernandez Chavez': '08-07', 'Marcos Leonardo Cervantes Talamantes': '04-28',
+  'Diego Manuel Medina Chavez': '06-06', 'Daniela Mayani Tovar Montes': '02-27', 'Lidia Yareli Martinez Pinedo': '03-03',
+  'Andrea Ortega Perez': '06-15', 'Manuel Cuica Santamaria': '08-09', 'Jose Manuel Jeronimo Lopez': '11-14',
+  'Alejandra Rosalia Arizmendi Gomez': '10-28', 'Pablo Gonzalez Galvan': '09-18', 'Emmi Jacqueline Caballero Cid': '05-18'
+};
 const demo = {
   load(){ return lsGet('rh_demo_registros', []); },
   save(r){ lsSet('rh_demo_registros', r); },
@@ -1131,7 +1254,7 @@ const demo = {
     const extra = lsGet('rh_demo_col', {});
     const base = lsGet('rh_demo_personal', null) || COLABS_BASE.map(([nombre,puesto,sucursal,ing,gaf]) => ({nombre, puesto, sucursal, activo:true, ingreso:ing||'', descanso:'', fechaBaja:'', movimiento:'', gafete:gaf||''}));
     const gaf = Object.fromEntries(COLABS_BASE.map(x => [x[0], x[4]]));
-    return base.map(c => ({ gafete: gaf[c.nombre] || '', ...c, ingreso:(extra[c.nombre]||{}).ingreso||c.ingreso, descanso:(extra[c.nombre]||{}).descanso||c.descanso }));
+    return base.map(c => ({ gafete: gaf[c.nombre] || '', cumple: CUMPLES_DEMO[c.nombre] || '', ...c, ingreso:(extra[c.nombre]||{}).ingreso||c.ingreso, descanso:(extra[c.nombre]||{}).descanso||c.descanso }));
   },
   async colaboradores(){ return this.lista(); },
   mover(tipo, quien, extra){ return `${tipo} · ${quien} · ${hoyISO()} ${horaAhora()}${extra ? ' · '+extra : ''}`; },
@@ -1142,8 +1265,8 @@ const demo = {
     const otroG = d.gafete && l.find(c => (c.gafete || '').toUpperCase() === d.gafete && c.nombre !== d.original);
     if(otroG) throw new Error('AUTH|El gafete ' + d.gafete + ' ya está asignado a ' + otroG.nombre + '.');
     let c;
-    if(!d.original){ c = { nombre:d.nombre, puesto:d.puesto, sucursal:d.sucursal, activo:true, ingreso:d.ingreso, descanso:d.descanso, fechaBaja:'', movimiento:this.mover('Alta', quien), gafete:d.gafete || '' }; l.push(c); }
-    else { c = l.find(x => x.nombre === d.original); Object.assign(c, { nombre:d.nombre, puesto:d.puesto, sucursal:d.sucursal, ingreso:d.ingreso, descanso:d.descanso, movimiento:this.mover('Edición', quien), gafete:d.gafete || '' }); }
+    if(!d.original){ c = { nombre:d.nombre, puesto:d.puesto, sucursal:d.sucursal, activo:true, ingreso:d.ingreso, descanso:d.descanso, fechaBaja:'', movimiento:this.mover('Alta', quien), gafete:d.gafete || '', cumple:d.cumple || '' }; l.push(c); }
+    else { c = l.find(x => x.nombre === d.original); Object.assign(c, { nombre:d.nombre, puesto:d.puesto, sucursal:d.sucursal, ingreso:d.ingreso, descanso:d.descanso, movimiento:this.mover('Edición', quien), gafete:d.gafete || '', cumple:d.cumple || '' }); }
     const extra = lsGet('rh_demo_col', {}); delete extra[d.original]; delete extra[d.nombre]; lsSet('rh_demo_col', extra);
     lsSet('rh_demo_personal', l); return c;
   },
@@ -1161,6 +1284,18 @@ const demo = {
     lsSet('rh_demo_personal', l); return c;
   },
   async vacaciones(){ return lsGet('rh_demo_vac', []); },
+  async empleadoMes(mes){ return Object.values(lsGet('rh_demo_emp', {})).filter(x => x.mes === mes); },
+  async guardarEvaluacion(d){
+    const quien = this.verificar(d.encargado, d.contrasena);
+    const e = (await this.encargados()).find(x => x.nombre === quien);
+    if(!accesoTotal(e) && e.sucursal !== 'Todas' && e.sucursal !== d.sucursal) throw new Error('AUTH|Solo el encargado de ' + d.sucursal + ' o RH pueden evaluar esta sucursal.');
+    const evals = d.evaluaciones.map(x => ({ ...x, total: puntosEval(x.cal) }));
+    const comp = evals.filter(x => evalCompleta(x.cal)).sort((a,b) => b.total - a.total);
+    const ganador = d.ganador && comp.some(x => x.nombre === d.ganador) ? d.ganador : (comp[0] || {}).nombre || '';
+    const r = { id: d.mes + d.sucursal, mes:d.mes, sucursal:d.sucursal, evaluaciones:evals, ganador, puntaje: ganador ? comp.find(x => x.nombre === ganador).total : 0,
+                observaciones:d.observaciones || '', evaluo:quien, fecha:hoyISO(), hora:horaAhora() };
+    const todo = lsGet('rh_demo_emp', {}); todo[d.mes + '|' + d.sucursal] = r; lsSet('rh_demo_emp', todo); return r;
+  },
   async cambiarContrasena(d){
     const quien = this.verificar(d.encargado, d.contrasena);
     if(String(d.nueva || '').length < 6) throw new Error('AUTH|La nueva contraseña debe tener al menos 6 caracteres.');
@@ -1311,7 +1446,7 @@ async function loadMes(y, m, force){
 }
 
 /* =================== NAVEGACIÓN =================== */
-const PADRE = { tipos:'inicio', colab:'tipos', calendario:'tipos', vacaciones:'inicio', personal:'inicio', horarios:'inicio', incidencias:'inicio', hoy:'inicio' };
+const PADRE = { cumple:'inicio', empleado:'inicio', tipos:'inicio', colab:'tipos', calendario:'tipos', vacaciones:'inicio', personal:'inicio', horarios:'inicio', incidencias:'inicio', hoy:'inicio' };
 function show(v){
   document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== 'v-'+v);
   state.view = v;
@@ -1422,7 +1557,7 @@ function abrirModal(modo){
   if(!alerta){
     const guardado = lsGet('rh_encargado', '');
     $('#m-enc').innerHTML = `<option value="">Elegir…</option>` +
-      state.encargados.filter(e => (modo === 'horario' || modo === 'plantilla') ? (accesoTotal(e) || e.sucursal === 'Todas' || e.sucursal === state.hsuc) : (!soloTotal || accesoTotal(e))).map(e => `<option ${e.nombre===guardado?'selected':''}>${esc(e.nombre)}</option>`).join('');
+      state.encargados.filter(e => (modo === 'horario' || modo === 'plantilla' || modo === 'empleado') ? (accesoTotal(e) || e.sucursal === 'Todas' || e.sucursal === (modo === 'empleado' ? state.esuc : state.hsuc)) : (!soloTotal || accesoTotal(e))).map(e => `<option ${e.nombre===guardado?'selected':''}>${esc(e.nombre)}</option>`).join('');
     $('#m-pass').value = '';
   }
   $('#m-err').hidden = true;
@@ -1515,6 +1650,7 @@ $('#m-ok').onclick = async () => {
     else if(modo === 'cancelarVac') await hacerCancelVac(enc, pass);
     else if(modo.startsWith('colab')) await hacerColab(enc, pass);
     else if(modo === 'horario') await hacerHorario(enc, pass);
+    else if(modo === 'empleado') await hacerEmpleado(enc, pass);
     else if(modo === 'plantilla') await hacerPlantilla(enc, pass);
     else if(modo === 'incidencia') await hacerIncidencia(enc, pass);
     else if(modo === 'vacPrevias') await hacerPrevias(enc, pass);
@@ -2162,6 +2298,11 @@ function actualizarListas(colabs){
   state.colabs = state.colabsTodos.filter(c => c.activo !== false);
   const n = pendientesDatos().length;
   if($('#pend-tag')){ $('#pend-tag').hidden = !n; $('#pend-tag').textContent = `⚠️ ${n} con datos pendientes`; }
+  const hoyC = proximosCumples(hoyISO(), 0);
+  if($('#cum-hoy')){
+    $('#cum-hoy').hidden = !hoyC.length;
+    $('#cum-hoy').textContent = `🎂 Hoy cumple${hoyC.length > 1 ? 'n' : ''} años: ${hoyC.map(x => nombreCorto(x.c.nombre) + (x.c.sucursal ? ` (${x.c.sucursal})` : '')).join(', ')}. ¡Felicidades!`;
+  }
 }
 function abrirPersonal(){
   show('personal');
@@ -2209,6 +2350,8 @@ $('#plist').addEventListener('click', e => {
   if(c.activo === false) formColab('colabReactivar', c); else formColab('colabEditar', c);
 });
 $('#pnuevo').onclick = () => formColab('colabNuevo', null);
+$('#c-cdia').innerHTML = '<option value="">Día</option>' + Array.from({length:31}, (_, i) => `<option value="${pad(i+1)}">${i+1}</option>`).join('');
+$('#c-cmes').innerHTML = '<option value="">Mes</option>' + MESES.map((m, i) => `<option value="${pad(i+1)}">${m}</option>`).join('');
 
 /* ---------- Contraseñas ---------- */
 function abrirPw(modo){
@@ -2275,6 +2418,8 @@ function formColab(modo, c){
   $('#c-ing').value = c ? (c.ingreso || '') : hoyISO();
   $('#c-desc').value = c ? (c.descanso || '') : '';
   $('#c-gafete').value = c ? (c.gafete || '') : '';
+  $('#c-cmes').value = c && c.cumple ? c.cumple.slice(0,2) : '';
+  $('#c-cdia').value = c && c.cumple ? c.cumple.slice(3) : '';
   $('#c-fbaja').value = hoyISO();
   $('#c-motivo').value = '';
   $('#c-reing').value = hoyISO();
@@ -2304,7 +2449,8 @@ async function hacerColab(enc, pass){
   if(modo === 'colabNuevo' || modo === 'colabEditar'){
     r = await api.guardarColaborador({ ...auth, original: modo === 'colabEditar' ? c.nombre : '',
       nombre:$('#c-nombre').value.trim().replace(/\s+/g,' '), puesto:$('#c-puesto').value.trim(), sucursal:$('#c-suc').value,
-      ingreso:$('#c-ing').value, descanso:$('#c-desc').value, gafete:$('#c-gafete').value.trim().toUpperCase() });
+      ingreso:$('#c-ing').value, descanso:$('#c-desc').value, gafete:$('#c-gafete').value.trim().toUpperCase(),
+      cumple: $('#c-cmes').value && $('#c-cdia').value ? `${$('#c-cmes').value}-${$('#c-cdia').value}` : '' });
     msg = modo === 'colabNuevo' ? `✓ Alta de ${r.nombre}` : `✓ Datos de ${r.nombre} actualizados`;
     if(modo === 'colabEditar' && r.nombre !== c.nombre){ state.cache = {}; state.vac = []; }
   } else if(modo === 'colabBaja'){
@@ -3359,6 +3505,174 @@ function imprimirReporte(o){
   setTimeout(() => window.print(), 50);
 }
 
+/* =================== CUMPLEAÑOS =================== */
+// c.cumple = 'MM-DD'. 29 de febrero se celebra el 28 en años no bisiestos.
+function fechaCumple(c, y){
+  let md = c.cumple;
+  if(md === '02-29' && !((y % 4 === 0 && y % 100 !== 0) || y % 400 === 0)) md = '02-28';
+  return `${y}-${md}`;
+}
+function proximosCumples(f, dias){
+  return (state.colabs || []).filter(c => c.cumple).map(c => {
+    let y = +f.slice(0,4), d = fechaCumple(c, y);
+    if(d < f){ y++; d = fechaCumple(c, y); }
+    return { c, d, falta: difDias(f, d) };
+  }).filter(x => x.falta <= dias).sort((a,b) => a.d.localeCompare(b.d) || a.c.nombre.localeCompare(b.c.nombre,'es'));
+}
+function abrirCumple(){
+  show('cumple');
+  state.cmes = state.cmes || hoyISO().slice(0,7);
+  state.csuc = state.csuc || 'Todas';
+  renderCumple();
+}
+function renderCumple(){
+  const ym = state.cmes, hoy = hoyISO();
+  $('#cu-mes').textContent = nombreMes(ym).replace(/^./, x => x.toUpperCase());
+  $('#cu-pills').innerHTML = ['Todas', ...SUCURSALES].map(s => `<button class="pill ${s===state.csuc?'on':''}" data-s="${s}">${s}</button>`).join('');
+  document.querySelectorAll('#cu-pills .pill').forEach(p => p.onclick = () => { state.csuc = p.dataset.s; renderCumple(); });
+  const deSuc = c => state.csuc === 'Todas' || c.sucursal === state.csuc;
+  const lista = cumplesDelMes(ym).filter(c => deSuc(c));
+  $('#cu-list').innerHTML = lista.length ? lista.map(c => {
+    const d = fechaCumple(c, +ym.slice(0,4)), falta = difDias(hoy, d);
+    const tag = falta === 0 ? '¡Hoy!' : falta > 0 && falta <= 7 ? `en ${falta} día${falta>1?'s':''}` : '';
+    return `<div class="cu-row ${falta === 0 ? 'hoy' : falta < 0 ? 'paso' : ''}"><span class="cu-dia">${+d.slice(8)}<small>${MESES_C[+d.slice(5,7)-1]}</small></span>
+      <span class="cu-info"><b>${esc(c.nombre)}</b><small>${esc(c.puesto)} · ${esc(c.sucursal || 'Sin sucursal')}</small></span>${tag ? `<span class="cu-tag">${tag}</span>` : ''}</div>`;
+  }).join('') : `<div class="empty">Nadie cumple años en ${esc(MESES[+ym.slice(5)-1])}${state.csuc !== 'Todas' ? ' en ' + esc(state.csuc) : ''}.</div>`;
+  const sin = (state.colabs || []).filter(c => !c.cumple && deSuc(c));
+  $('#cu-sin').textContent = sin.length ? `Sin fecha de cumpleaños (${sin.length}): ${sin.map(c => nombreCorto(c.nombre)).join(', ')}. RH la agrega en Colaboradores.` : '';
+}
+const cumplesDelMes = ym => (state.colabs || []).filter(c => c.cumple && c.cumple.slice(0,2) === ym.slice(5))
+  .sort((a,b) => a.cumple.localeCompare(b.cumple) || a.nombre.localeCompare(b.nombre,'es'));
+$('#cu-prev').onclick = () => { state.cmes = sumarMeses(state.cmes + '-01', -1).slice(0,7); renderCumple(); };
+$('#cu-next').onclick = () => { state.cmes = sumarMeses(state.cmes + '-01', 1).slice(0,7); renderCumple(); };
+$('#cu-hoy').onclick = () => { state.cmes = hoyISO().slice(0,7); renderCumple(); };
+$('#cu-print').onclick = () => {
+  const ym = state.cmes, suc = state.csuc;
+  const lista = cumplesDelMes(ym).filter(c => suc === 'Todas' || c.sucursal === suc);
+  const mes = MESES[+ym.slice(5)-1];
+  imprimirDoc(`<div class="rp-head"><div><div class="rp-emp">PASTELERÍA Y PANADERÍA JACOBO</div><div class="rp-area">Recursos Humanos</div></div></div>
+    <h1 class="cp-tit">🎂 Cumpleañeros de ${esc(mes)}</h1>
+    <p class="cp-sub">${suc === 'Todas' ? 'Sucursales Río, Otay y Monarca' : 'Sucursal ' + esc(suc)}</p>
+    ${lista.length ? `<table class="cp-tab"><tbody>${lista.map(c => `<tr><td>${+c.cumple.slice(3)}</td><td><b>${esc(c.nombre)}</b>${suc === 'Todas' ? ` <small>· ${esc(c.sucursal || '')}</small>` : ''}</td></tr>`).join('')}</tbody></table>` : '<p class="cp-sub">Nadie cumple años este mes.</p>'}
+    <p class="cp-pie">¡Muchas felicidades!</p>`);
+};
+$('#cum-hoy').onclick = () => { state.cmes = hoyISO().slice(0,7); state.csuc = 'Todas'; abrirCumple(); };
+
+/* =================== EMPLEADO DEL MES =================== */
+const CRITERIOS = [
+  { k:'atencion', t:'Atención al cliente', p:20 }, { k:'responsabilidad', t:'Responsabilidad', p:15 },
+  { k:'puntualidad', t:'Puntualidad y asistencia', p:15 }, { k:'equipo', t:'Trabajo en equipo', p:15 },
+  { k:'calidad', t:'Calidad del trabajo', p:15 }, { k:'iniciativa', t:'Iniciativa y actitud', p:10 }, { k:'orden', t:'Orden e higiene', p:10 }
+];
+const puntosEval = cal => Math.round(CRITERIOS.reduce((s, c) => s + ((+cal[c.k] || 0) / 5) * c.p, 0) * 10) / 10;
+const evalCompleta = cal => CRITERIOS.every(c => +cal[c.k] > 0);
+async function abrirEmpleado(){
+  show('empleado');
+  state.emes = state.emes || hoyISO().slice(0,7);
+  state.esuc = state.esuc || (SUCURSALES.includes(lsGet('rh_sucursal', '')) ? lsGet('rh_sucursal', '') : 'Río');
+  cargarIncidencias().then(() => { if(state.view === 'empleado') renderEmpleado(); });
+  await cargarEmpleado();
+}
+async function cargarEmpleado(){
+  $('#em-list').innerHTML = `<div class="loading">Cargando…</div>`; $('#em-res').innerHTML = ''; $('#em-estado').innerHTML = '';
+  try{ state.eguard = (await api.empleadoMes(state.emes)).find(x => x.sucursal === state.esuc) || null; }
+  catch(e){ toast('No se pudo cargar la evaluación: ' + e.message, true); state.eguard = null; }
+  // Borrador: lo guardado, o en blanco con el personal activo de la sucursal
+  const prev = {}; (state.eguard ? state.eguard.evaluaciones : []).forEach(x => prev[x.nombre] = x.cal);
+  const activos = (state.colabs || []).filter(c => c.sucursal === state.esuc);
+  const nombres = [...new Set([...(state.eguard ? state.eguard.evaluaciones.map(x => x.nombre) : []), ...activos.map(c => c.nombre)])];
+  state.edatos = nombres.map(n => { const c = (state.colabsTodos || []).find(x => x.nombre === n) || { nombre:n, puesto:'' };
+    return { nombre:n, puesto:c.puesto, cal: { ...(prev[n] || {}) } }; }).sort((a,b) => a.nombre.localeCompare(b.nombre,'es'));
+  state.eganador = state.eguard ? state.eguard.ganador : '';
+  state.eobs = state.eguard ? state.eguard.observaciones : '';
+  renderEmpleado();
+}
+function incMes(nombre, ym){
+  const l = incVigentes().filter(x => x.colaborador === nombre && x.fecha.slice(0,7) === ym);
+  const n = t => l.filter(x => x.tipo === t).length;
+  return { faltas:n('falta'), retardos:n('retardo'), llamados:n('llamado') };
+}
+function renderEmpleado(){
+  const ym = state.emes;
+  $('#em-mes').textContent = nombreMes(ym).replace(/^./, x => x.toUpperCase());
+  $('#em-pills').innerHTML = SUCURSALES.map(s => `<button class="pill ${s===state.esuc?'on':''}" data-s="${s}">${s}</button>`).join('');
+  document.querySelectorAll('#em-pills .pill').forEach(p => p.onclick = () => { state.esuc = p.dataset.s; cargarEmpleado(); });
+  $('#em-estado').innerHTML = state.eguard
+    ? `<div class="m-err" style="background:var(--cafe-bg);color:var(--brand)">Guardada por <b>${esc(state.eguard.evaluo)}</b> el ${esc(fechaMedia(state.eguard.fecha))} a las ${esc(state.eguard.hora)}. Se puede corregir y volver a guardar.</div>` : '';
+  const comp = state.edatos.filter(x => evalCompleta(x.cal)).map(x => ({ ...x, total: puntosEval(x.cal) })).sort((a,b) => b.total - a.total);
+  const maxT = comp.length ? comp[0].total : null;
+  const sugerido = state.eganador && comp.some(x => x.nombre === state.eganador) ? state.eganador : (comp[0] || {}).nombre || '';
+  if(!state.edatos.length){ $('#em-list').innerHTML = `<div class="empty">No hay colaboradores activos en ${esc(state.esuc)}.</div>`; $('#em-res').innerHTML = ''; return; }
+  $('#em-list').innerHTML = state.edatos.map((x, i) => {
+    const t = puntosEval(x.cal), r = incMes(x.nombre, ym), completa = evalCompleta(x.cal);
+    const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`].filter(Boolean);
+    return `<div class="em-card ${completa && x.nombre === sugerido ? 'gana' : ''}" data-i="${i}">
+      <div class="em-head"><div><b>${completa && x.nombre === sugerido ? '🏆 ' : ''}${esc(x.nombre)}</b><small>${esc(x.puesto || '')}</small></div>
+        <span class="em-tot">${t}<small>${completa ? 'de 100' : 'incompleta'}</small></span></div>
+      ${ref.length ? `<div class="em-ref">En el mes: ${ref.join(' · ')}</div>` : ''}
+      ${CRITERIOS.map(c => `<div class="em-cri"><span>${c.t} <small>(${c.p} pts)</small></span><span class="em-btns">${[1,2,3,4,5].map(v => `<button type="button" data-k="${c.k}" data-v="${v}" class="${+x.cal[c.k] === v ? 'on' : ''}">${v}</button>`).join('')}</span></div>`).join('')}
+    </div>`;
+  }).join('');
+  const empatados = comp.filter(x => x.total === maxT);
+  $('#em-res').innerHTML = `<h3>Resultado del mes</h3>
+    ${comp.length ? `<label>Empleado del mes${empatados.length > 1 ? ' <span class="rojo">(hay empate: elegir uno)</span>' : ''}
+      <select id="em-gan">${comp.map(x => `<option value="${esc(x.nombre)}" ${x.nombre === sugerido ? 'selected' : ''}>${esc(x.nombre)} · ${x.total} pts</option>`).join('')}</select></label>`
+      : `<p class="loading">Calificar los 7 criterios de al menos un colaborador para ver el resultado.</p>`}
+    <label>Observaciones<textarea id="em-obs" maxlength="500" placeholder="Por qué se eligió, logros del mes…">${esc(state.eobs || '')}</textarea></label>
+    <p class="loading" style="text-align:left">${comp.length} de ${state.edatos.length} evaluados por completo.</p>
+    <div class="actions"><button class="btn" id="em-guardar">💾 Guardar evaluación</button></div>`;
+  if($('#em-gan')) $('#em-gan').onchange = e => { state.eganador = e.target.value; renderEmpleado(); };
+  $('#em-obs').oninput = e => { state.eobs = e.target.value; };
+  $('#em-guardar').onclick = () => {
+    if(!state.edatos.some(x => Object.keys(x.cal).length)) return toast('Calificar al menos a un colaborador', true);
+    $('#m-ic').textContent = '🏆'; $('#m-ic').style.background = '#fff1d6';
+    $('#m-titulo').textContent = 'Guardar evaluación';
+    $('#m-sub').innerHTML = `<b>Empleado del mes · ${esc(state.esuc)}</b><br><small>${esc(nombreMes(state.emes))}</small>`;
+    $('#m-ok').textContent = 'Guardar evaluación';
+    abrirModal('empleado');
+    state.pendiente = { empleado:true };
+  };
+}
+$('#em-list').addEventListener('click', e => {
+  const b = e.target.closest('button[data-k]'); if(!b) return;
+  const x = state.edatos[+b.closest('.em-card').dataset.i];
+  x.cal[b.dataset.k] = +x.cal[b.dataset.k] === +b.dataset.v ? 0 : +b.dataset.v;
+  if(!x.cal[b.dataset.k]) delete x.cal[b.dataset.k];
+  const y = window.scrollY; renderEmpleado(); window.scrollTo(0, y);
+});
+async function hacerEmpleado(enc, pass){
+  const evaluaciones = state.edatos.filter(x => Object.keys(x.cal).length).map(x => ({ nombre:x.nombre, puesto:x.puesto, cal:x.cal }));
+  const r = await api.guardarEvaluacion({ mes:state.emes, sucursal:state.esuc, evaluaciones, ganador: $('#em-gan') ? $('#em-gan').value : '',
+    observaciones: state.eobs || '', encargado:enc, contrasena:pass });
+  state.eguard = r; state.eganador = r.ganador;
+  cerrarModal();
+  toast(r.ganador ? `🏆 Empleado del mes en ${state.esuc}: ${nombreCorto(r.ganador)} (${r.puntaje} pts)` : `✓ Evaluación guardada · ${r.evaluo}`);
+  renderEmpleado();
+}
+$('#em-prev').onclick = () => { state.emes = sumarMeses(state.emes + '-01', -1).slice(0,7); cargarEmpleado(); };
+$('#em-next').onclick = () => { state.emes = sumarMeses(state.emes + '-01', 1).slice(0,7); cargarEmpleado(); };
+$('#em-hoy').onclick = () => { state.emes = hoyISO().slice(0,7); cargarEmpleado(); };
+$('#em-print').onclick = () => {
+  const ym = state.emes, g = state.eguard;
+  const filas = state.edatos.map(x => ({ ...x, total: puntosEval(x.cal) }));
+  const gan = $('#em-gan') ? $('#em-gan').value : (g ? g.ganador : '');
+  const celda = (x, c) => x.cal[c.k] ? `${Math.round(x.cal[c.k] / 5 * c.p * 10) / 10}<br><small>(${x.cal[c.k]})</small>` : '';
+  imprimirDoc(`<div class="rp-head"><div><div class="rp-emp">PASTELERÍA Y PANADERÍA JACOBO</div><div class="rp-area">Recursos Humanos</div></div>
+      <div class="rp-fecha">Tijuana, B.C., a ${esc(fechaDoc(hoyISO()))}</div></div>
+    <h2 class="rp-tit">Rúbrica general – Empleado del mes</h2>
+    <table class="rp-datos"><tr><th>Sucursal</th><td>${esc(state.esuc)}</td><th>Mes evaluado</th><td>${esc(nombreMes(ym))}</td></tr>
+      <tr><th>Responsable de la evaluación</th><td colspan="3">${esc(g ? g.evaluo : '')}</td></tr></table>
+    <p class="rp-nota" style="background:#f4f6fa;border-color:#999">Escala de evaluación: 5 Excelente: supera las expectativas · 4 Muy bueno: cumple y destaca · 3 Bueno: cumple con lo esperado · 2 En desarrollo: necesita mejorar · 1 Insuficiente: requiere mejorar considerablemente. Cada criterio vale (calificación ÷ 5) × sus puntos; entre paréntesis, la calificación.</p>
+    <h3 class="rp-sec">Tabla de evaluación por colaborador</h3>
+    <table class="rp-tab em-ptab"><thead><tr><th>No.</th><th>Nombre del colaborador</th>${CRITERIOS.map(c => `<th>${esc(c.t)} (${c.p} pts)</th>`).join('')}<th>Total (100 pts)</th></tr></thead>
+      <tbody>${filas.map((x, i) => `<tr class="${x.nombre === gan ? 'gana' : ''}"><td>${i+1}</td><td>${esc(x.nombre)}</td>${CRITERIOS.map(c => `<td>${celda(x, c)}</td>`).join('')}<td>${evalCompleta(x.cal) ? x.total : ''}</td></tr>`).join('')}</tbody></table>
+    <h3 class="rp-sec">Resultado del mes</h3>
+    <table class="rp-datos"><tr><th>Empleado del mes</th><td>${esc(gan || '')}</td><th>Puntaje final</th><td>${gan ? esc(String((filas.find(x => x.nombre === gan) || {}).total)) + ' / 100 puntos' : ''}</td></tr>
+      <tr><th>Observaciones</th><td colspan="3">${esc(($('#em-obs') && $('#em-obs').value) || (g && g.observaciones) || '')}</td></tr></table>
+    <div class="rp-firmas"><div><span></span>Firma del responsable<br><small>${esc(g ? g.evaluo : '')}</small></div><div><span></span>Fecha</div></div>
+    <div class="rp-pie">Documento generado desde el sistema de RH de Jacobo el ${esc(fechaDoc(hoyISO()))} a las ${esc(horaAhora())}.</div>`);
+};
+
 /* =================== HOY: resumen del día =================== */
 // Antigüedad y días de vacaciones sin depender de la pantalla de Vacaciones
 function resumenVac(c, ref){
@@ -3466,6 +3780,9 @@ function renderHoy(){
     incHoy.length ? corta('inc', incHoy.map(x => persona(x.colaborador, `${TIPOS_INC[x.tipo].ic} ${esc(etiquetaInc(x))} · ${esc(x.sucursal)}`, 'inc'))) : vacio('Sin incidencias registradas.'));
   html += caja('🎉', 'Aniversarios (7 días)', aniv.length,
     aniv.length ? aniv.map(a => persona(a.c.nombre, `${a.falta === 0 ? '<b>Hoy</b>' : esc(fechaMedia(a.d))} · cumple ${a.n} año${a.n>1?'s':''} · le corresponden ${diasLFT(a.n)} días`, 'vac')).join('') : vacio('Sin aniversarios esta semana.'));
+  const cums = proximosCumples(f, 7).filter(x => deSuc(x.c));
+  html += caja('🎂', 'Cumpleaños (7 días)', cums.length,
+    cums.length ? cums.map(x => persona(x.c.nombre, `${x.falta === 0 ? '<b>Hoy</b>' : esc(fechaMedia(x.d))} · ${esc(x.c.sucursal || 'sin sucursal')}`)).join('') : vacio('Nadie cumple años esta semana.'));
   html += caja('⏳', 'Vacaciones por vencer', porVencer.length,
     porVencer.length ? corta('venc', porVencer.map(x => { const d = difDias(f, x.r.limite); return persona(x.c.nombre, `${x.r.disp} días pendientes · ${d < 0 ? `<span class="rojo">plazo vencido el ${esc(fechaMedia(x.r.limite))}</span>` : `vence ${esc(fechaMedia(x.r.limite))} (${d} días)`}`, 'vac'); })) : vacio('Nadie con plazo próximo a vencer.'), porVencer.some(x => x.r.limite < f) ? 'urgente' : '');
   const pendD = pendientesDatos();
@@ -3532,6 +3849,15 @@ const TOURS = {
     { s:'#iq', t:'Buscar colaborador', x:'Muestra su historial, contadores y alertas.' },
     { s:'#ical', t:'Calendario', x:'Incidencias del mes. Tocar un día para ver el detalle.' },
     { s:'#iinfo', t:'Registrar e imprimir', x:'Registrar una incidencia o imprimir el reporte por mes, con espacio para firmas.' }
+  ],
+  cumple: [
+    { s:'#cu-pills', t:'Por sucursal', x:'Ver los cumpleaños del mes de todas las sucursales o de una sola.' },
+    { s:'#cu-print', t:'Cartel del mes', x:'Imprime la lista de cumpleañeros del mes para pegarla en la sucursal.' }
+  ],
+  empleado: [
+    { s:'#em-pills', t:'Sucursal y mes', x:'Cada encargado evalúa a su sucursal; RH puede evaluar cualquiera.' },
+    { s:'#em-list', t:'Calificar', x:'Tocar del 1 al 5 en cada criterio. La app calcula los puntos y marca con 🏆 al de mayor puntaje. Se muestran las faltas y retardos del mes como referencia.' },
+    { s:'#em-print', t:'Formato para firmar', x:'Imprime la rúbrica con los puntos ya llenos, lista para firma.' }
   ],
   personal: [
     { s:'#pnuevo', t:'Nuevo colaborador', x:'Dar de alta con puesto, sucursal y fecha de ingreso. Solo RH puede autorizarlo.' },
@@ -3792,6 +4118,8 @@ function tick(){
 $('#irVac').onclick = abrirVacaciones;
 $('#irPersonal').onclick = () => conAcceso(abrirPersonal, 'Colaboradores');
 $('#irHor').onclick = abrirHorarios;
+$('#irCum').onclick = abrirCumple;
+$('#irEmp').onclick = abrirEmpleado;
 $('#irInc').onclick = abrirIncidencias;
 $('#irHoy').onclick = () => conAcceso(abrirHoy, 'Hoy');
 
