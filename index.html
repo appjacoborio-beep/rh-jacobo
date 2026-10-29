@@ -208,6 +208,18 @@ button.ac-item:hover{background:var(--bg)}
 .ev-det .ev-meta span{background:var(--bg);border-radius:99px;padding:4px 10px;font-size:12.5px;font-weight:700;color:var(--muted)}
 .ev-det .ev-desc{white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:10px 12px;font-size:14px}
 .ev-det .ev-pie{font-size:12px;color:var(--muted);text-align:center}
+.sd-wrap{background:var(--bg);border-radius:14px;padding:10px;margin-bottom:12px}
+.sd-head h3{font-size:16px;text-align:center}
+.sd-cal{gap:4px}
+.sd-cal .sd{min-height:0;height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:700;font-size:13px;display:grid;place-items:center;padding:0;position:relative;color:var(--ink)}
+.sd-cal .sd.on{background:var(--err);border-color:var(--err);color:#fff}
+.sd-cal .sd.vac{background:#f2c12e;border-color:#f2c12e;color:#fff;cursor:not-allowed}
+.sd-cal .sd.ocup{background:var(--line);color:var(--muted);cursor:not-allowed;text-decoration:line-through}
+.sd-cal .sd.desc::after{content:"";position:absolute;bottom:4px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#b8612a}
+.sd-cal .sd.hoy{outline:2px solid var(--brand-2);outline-offset:-2px}
+.sd-k{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:4px;vertical-align:-1px;background:var(--err)}
+.sd-k.vac{background:#f2c12e} .sd-k.desc{background:#b8612a;border-radius:50%;width:7px;height:7px;vertical-align:1px}
+.sd-ley{margin-top:8px;font-size:12px}
 .pie-ini{text-align:center;margin-top:22px}
 .linkbtn{background:none;border:0;color:var(--brand);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:8px 12px;border-radius:8px}
 .linkbtn:hover{background:var(--cafe-bg)}
@@ -813,6 +825,14 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   .ev-det .ev-meta span{background:var(--lg-soft);color:var(--lg-sec);border-radius:999px}
   .ev-det .ev-desc{background:var(--lg-soft);border-radius:18px}
 }
+@media screen{
+  .sd-wrap{background:var(--lg-soft);border-radius:20px}
+  .sd-cal .sd{background:var(--lg-field);border:0;box-shadow:var(--lg-field-shadow);border-radius:12px;color:var(--lg-text);transition:background .25s,transform .12s}
+  .sd-cal .sd:active{transform:scale(.94)}
+  .sd-cal .sd.on{background:linear-gradient(180deg,#ff6a61,#ff3b30);color:#fff;box-shadow:0 4px 12px rgba(255,59,48,.3)}
+  .sd-cal .sd.vac{background:rgba(255,159,10,.75);color:#fff;box-shadow:none}
+  .sd-cal .sd.ocup{background:var(--lg-soft);color:var(--lg-sec);box-shadow:none}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
@@ -1414,6 +1434,17 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <label>Fecha<input type="date" id="i-fecha"></label>
         </div>
         <label id="i-hasta-wrap"><span id="i-hasta-lbl">Hasta (si son varios días)</span><input type="date" id="i-hasta"></label>
+        <div class="sd-wrap" id="i-sdias" hidden>
+          <div class="mini-t">Días de suspensión: tocar cada día que no se presenta</div>
+          <div class="calhead sd-head">
+            <button class="nav" type="button" id="i-sprev" aria-label="Mes anterior">‹</button>
+            <h3 id="i-smes"></h3>
+            <button class="nav" type="button" id="i-snext" aria-label="Mes siguiente">›</button>
+          </div>
+          <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+          <div class="cal sd-cal" id="i-scal"></div>
+          <div class="legend sd-ley"><span><i class="sd-k on"></i>Suspendido</span><span><i class="sd-k vac"></i>Vacaciones</span><span><i class="sd-k desc"></i>Su descanso</span></div>
+        </div>
         <div class="m-err aviso" id="i-susp-nota" hidden></div>
         <label id="i-min-wrap">Minutos de retardo<input type="number" id="i-min" min="1" max="600" step="1" inputmode="numeric" placeholder="Ej. 15"></label>
         <label id="i-sal-wrap">Hora en que salió<input type="time" id="i-sal"></label>
@@ -1755,11 +1786,12 @@ const demo = {
     const registro = this.verificar(d.encargado, d.contrasena);
     if(d.tipo === 'suspension' && !accesoTotal((await this.encargados()).find(x => x.nombre === registro))) throw new Error('AUTH|Solo RH o dueños pueden aplicar una suspensión.');
     const todas = lsGet('rh_demo_inc', []), t = TIPOS_INC[d.tipo], fin = d.hasta || d.fecha;
-    const choque = todas.find(x => !x.canceladoPor && x.colaborador === d.colaborador && x.fecha <= fin && (x.hasta || x.fecha) >= d.fecha &&
+    const nuevos = diasDe(d);
+    const choque = todas.find(x => !x.canceladoPor && x.colaborador === d.colaborador && diasDe(x).some(f => nuevos.includes(f)) &&
       ((x.tipo === d.tipo && d.tipo !== 'llamado') || (t.cubre && TIPOS_INC[x.tipo].cubre)));
     if(choque) throw new Error('AUTH|Ya hay ' + TIPOS_INC[choque.tipo].txt.toLowerCase() + ' registrada para ' + d.colaborador + ' el ' + choque.fecha + '.');
     const x = { id: Math.random().toString(36).slice(2,12), fecha:d.fecha, hasta:d.hasta || '', colaborador:d.colaborador, sucursal:d.sucursal, tipo:d.tipo,
-                minutos:d.minutos || 0, horaSalida:d.horaSalida || '', detalle:d.detalle || '', descripcion:d.descripcion || '',
+                minutos:d.minutos || 0, horaSalida:d.horaSalida || '', detalle:d.detalle || '', descripcion:d.descripcion || '', dias:d.dias || [],
                 registro, fechaReg:hoyISO(), horaReg:horaAhora(), canceladoPor:'', fechaCancel:'', horaCancel:'' };
     todas.push(x); lsSet('rh_demo_inc', todas); return x;
   },
@@ -3596,13 +3628,13 @@ function etiquetaInc(x){
   if(x.tipo === 'retardo') return `Retardo ${x.minutos} min`;
   if(x.tipo === 'salida') return `Salida ${hora12(x.horaSalida)}`;
   if(x.tipo === 'llamado') return `Llamado ${x.detalle ? x.detalle.toLowerCase() : ''}`.trim();
-  if(x.tipo === 'suspension'){ const n = diasEntre(x.fecha, x.hasta || x.fecha); return `Suspensión ${n} día${n > 1 ? 's' : ''}`; }
+  if(x.tipo === 'suspension'){ const n = x.dias && x.dias.length ? x.dias.length : diasEntre(x.fecha, x.hasta || x.fecha); return `Suspensión ${n} día${n > 1 ? 's' : ''}`; }
   return TIPOS_INC[x.tipo] ? TIPOS_INC[x.tipo].txt : x.tipo;
 }
 const incVigentes = () => (state.inc || []).filter(x => !x.canceladoPor);
-const cubreFecha = (x, f) => x.fecha <= f && (x.hasta || x.fecha) >= f;
+const cubreFecha = (x, f) => x.dias && x.dias.length ? x.dias.includes(f) : x.fecha <= f && (x.hasta || x.fecha) >= f;
 const incDe = (nombre, f) => incVigentes().filter(x => x.colaborador === nombre && cubreFecha(x, f));
-function diasDe(x){ const r = []; let f = x.fecha; const fin = x.hasta || x.fecha; let g = 0; while(f <= fin && g++ < 100){ r.push(f); f = sumarDias(f, 1); } return r; }
+function diasDe(x){ if(x.dias && x.dias.length) return x.dias.slice(); const r = []; let f = x.fecha; const fin = x.hasta || x.fecha; let g = 0; while(f <= fin && g++ < 100){ r.push(f); f = sumarDias(f, 1); } return r; }
 
 async function cargarIncidencias(){
   try{ state.inc = await api.incidencias(); }
@@ -3640,6 +3672,7 @@ function abrirIncidencia(nombre, fecha, sucursal){
   $('#i-fecha').value = fecha || hoyISO();
   $('#i-tipo').innerHTML = Object.entries(TIPOS_INC).map(([k,t]) => `<option value="${k}">${t.ic} ${esc(t.txt)}</option>`).join('');
   $('#i-tipo').value = 'falta';
+  state.iSDias = new Set(); state.iSMes = null;
   $('#i-hasta').value = ''; $('#i-min').value = ''; $('#i-sal').value = ''; $('#i-llam').value = 'Verbal'; $('#i-folio').value = ''; $('#i-desc').value = '';
   $('#m-ok').textContent = 'Registrar incidencia';
   abrirModal('incidencia');
@@ -3661,19 +3694,55 @@ function pintarIncidencia(){
   $('#i-folio-wrap').hidden = $('#i-tipo').value !== 'incapacidad';
   const esSusp = $('#i-tipo').value === 'suspension';
   $('#i-desc-lbl').firstChild.textContent = $('#i-tipo').value === 'llamado' ? 'Descripción de lo sucedido' : esSusp ? 'Motivo de la sanción' : 'Descripción (opcional)';
-  $('#i-hasta-lbl').textContent = esSusp ? 'Último día de la suspensión (vacío = 1 día)' : 'Hasta (si son varios días)';
+  $('#i-fecha').parentElement.hidden = esSusp;
+  if(esSusp) $('#i-hasta-wrap').hidden = true;
+  $('#i-sdias').hidden = !esSusp;
   $('#i-susp-nota').hidden = !esSusp;
-  if(esSusp){
-    const ini = $('#i-fecha').value, fin = $('#i-hasta').value && $('#i-hasta').value >= ini ? $('#i-hasta').value : ini;
-    const n = ini ? diasEntre(ini, fin) : 0;
-    $('#i-susp-nota').innerHTML = `⛔ Suspensión <b>sin goce de sueldo</b>. Solo la autoriza RH o un dueño. Máximo ${SUSP_MAX} días (LFT art. 423 fr. X) y debe estar prevista en el Reglamento Interior de Trabajo; el colaborador debe ser escuchado antes de aplicarla.` +
-      (n ? `<br><b>${n} día${n > 1 ? 's' : ''}</b>${n > SUSP_MAX ? ' · excede el máximo' : ` · regresa el ${esc(fechaLarga(sumarDias(fin, 1)))}`}` : '');
-  }
+  if(esSusp) pintarDiasSusp();
   // Lo que ya tiene ese día
   const f = $('#i-fecha').value;
-  const ya = c && f ? incDe(c.nombre, f) : [];
+  const ya = c && f && !esSusp ? incDe(c.nombre, f) : [];
   $('#i-ya').innerHTML = ya.length ? `<div class="m-err aviso">Ya tiene ese día: ${ya.map(x => esc(etiquetaInc(x))).join(', ')}</div>` : '';
 }
+// Calendario para elegir los días de la suspensión (pueden ser días sueltos, p. ej. al regresar de vacaciones)
+function vacDiasDe(nombre){ const s = new Set(); vacVigentes().filter(v => v.colaborador === nombre).forEach(v => v.fechas.forEach(f => s.add(f))); return s; }
+function pintarDiasSusp(){
+  if(!state.vacSusp){   // las vacaciones se necesitan para bloquear esos días y avisar cuándo regresa
+    state.vacSusp = true;
+    cargarVacaciones().then(() => { if(!state.iSDias.size) state.iSMes = null; if(!$('#i-sdias').hidden) pintarDiasSusp(); });
+  }
+  const c = state.iSel, hoy = hoyISO(), vac = c ? vacDiasDe(c.nombre) : new Set();
+  if(!state.iSMes){
+    // Si está de vacaciones, empezar en el mes en que regresa
+    let ref = hoy; if(vac.has(hoy)){ while(vac.has(ref)) ref = sumarDias(ref, 1); }
+    state.iSMes = ref.slice(0,7); state.iSReg = vac.has(hoy) ? ref : '';
+  }
+  const [y, m] = state.iSMes.split('-').map(Number);
+  $('#i-smes').textContent = `${MESES[m-1]} ${y}`;
+  const dIdx = c ? DIAS_SEMANA.indexOf(c.descanso) : -1;
+  const offset = (new Date(y, m-1, 1).getDay() + 6) % 7;
+  let html = '';
+  for(let i = 0; i < offset; i++) html += `<div class="day blank"></div>`;
+  for(let d = 1; d <= new Date(y, m, 0).getDate(); d++){
+    const f = `${y}-${pad(m)}-${pad(d)}`;
+    const ocup = c && incDe(c.nombre, f).some(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
+    const cls = vac.has(f) ? 'vac' : ocup ? 'ocup' : state.iSDias.has(f) ? 'on' : '';
+    html += `<button type="button" class="sd ${cls} ${dIdx >= 0 && diaSem(f) === dIdx ? 'desc' : ''} ${f === hoy ? 'hoy' : ''}" data-f="${f}" ${vac.has(f) || ocup ? 'disabled' : ''} title="${vac.has(f) ? 'Vacaciones' : ocup ? 'Ya tiene incidencia' : ''}">${d}</button>`;
+  }
+  $('#i-scal').innerHTML = html;
+  const dias = [...state.iSDias].sort(), n = dias.length;
+  $('#i-susp-nota').innerHTML = (state.iSReg ? `🌴 Está de vacaciones; regresa el <b>${esc(fechaLarga(state.iSReg))}</b>.<br>` : '') +
+    `⛔ Suspensión <b>sin goce de sueldo</b>. Solo la autoriza RH o un dueño. Máximo ${SUSP_MAX} días (LFT art. 423 fr. X) y debe estar prevista en el Reglamento Interior de Trabajo; el colaborador debe ser escuchado antes de aplicarla.` +
+    (n ? `<br><b>${n} día${n > 1 ? 's' : ''}:</b> ${dias.map(f => esc(fechaMedia(f))).join(', ')}${n > SUSP_MAX ? ' · <b>excede el máximo</b>' : ` · se presenta el ${esc(fechaLarga(sumarDias(dias[n-1], 1)))}`}` : '<br><b>Tocar en el calendario los días de suspensión.</b>');
+}
+$('#i-scal').addEventListener('click', e => {
+  const b = e.target.closest('.sd[data-f]'); if(!b || b.disabled) return;
+  const f = b.dataset.f; if(state.iSDias.has(f)) state.iSDias.delete(f); else state.iSDias.add(f);
+  $('#m-err').hidden = true; pintarDiasSusp();
+});
+$('#i-sprev').onclick = () => { state.iSMes = sumarMeses(state.iSMes + '-01', -1).slice(0,7); pintarDiasSusp(); };
+$('#i-snext').onclick = () => { state.iSMes = sumarMeses(state.iSMes + '-01', 1).slice(0,7); pintarDiasSusp(); };
+
 function buscarIncColab(){
   const q = norm($('#i-n').value.trim());
   if(!q){ $('#i-res').innerHTML = `<div class="vacio">Escribir nombre o puesto del colaborador.</div>`; return; }
@@ -3691,12 +3760,15 @@ $('#i-res').addEventListener('click', e => {
 ['#i-tipo','#i-fecha','#i-hasta'].forEach(id => $(id).addEventListener('change', pintarIncidencia));
 
 function datosInc(){
-  const c = state.iSel, tipo = $('#i-tipo').value, t = TIPOS_INC[tipo], fecha = $('#i-fecha').value;
+  const c = state.iSel, tipo = $('#i-tipo').value, t = TIPOS_INC[tipo];
+  const sDias = tipo === 'suspension' ? [...(state.iSDias || [])].sort() : [];
+  const fecha = tipo === 'suspension' ? (sDias[0] || '') : $('#i-fecha').value;
   if(!c) return { error:'Buscar y elegir al colaborador.' };
+  if(tipo === 'suspension' && !sDias.length) return { error:'Tocar en el calendario los días de la suspensión.' };
   if(!fecha) return { error:'Elegir la fecha.' };
   if(fecha > hoyISO() && !t.rango) return { error:'La fecha no puede ser futura para este tipo de incidencia.' };
   const d = { colaborador:c.nombre, sucursal: state.iSuc || c.sucursal, tipo, fecha, descripcion:$('#i-desc').value.trim() };
-  if(t.rango && $('#i-hasta').value){
+  if(t.rango && $('#i-hasta').value && tipo !== 'suspension'){
     if($('#i-hasta').value < fecha) return { error:'La fecha "hasta" no puede ser antes del inicio.' };
     d.hasta = $('#i-hasta').value;
   }
@@ -3706,12 +3778,13 @@ function datosInc(){
   if(tipo === 'incapacidad' && $('#i-folio').value.trim()) d.detalle = 'Folio ' + $('#i-folio').value.trim();
   if(tipo === 'suspension'){
     if(!d.descripcion) return { error:'Escribir el motivo de la suspensión.' };
-    if(diasEntre(d.fecha, d.hasta || d.fecha) > SUSP_MAX) return { error:`La suspensión no puede ser mayor a ${SUSP_MAX} días (LFT art. 423 fr. X).` };
+    if(sDias.length > SUSP_MAX) return { error:`La suspensión no puede ser mayor a ${SUSP_MAX} días (LFT art. 423 fr. X).` };
     d.detalle = 'Sin goce de sueldo';
+    d.dias = sDias; if(sDias.length > 1) d.hasta = sDias[sDias.length - 1];
   }
   // Choques del lado de la página (el servidor también revisa)
-  const fin = d.hasta || d.fecha;
-  const choque = incVigentes().find(x => x.colaborador === d.colaborador && x.fecha <= fin && (x.hasta || x.fecha) >= d.fecha &&
+  const nuevos = diasDe(d);
+  const choque = incVigentes().find(x => x.colaborador === d.colaborador && diasDe(x).some(f => nuevos.includes(f)) &&
     ((x.tipo === tipo && tipo !== 'llamado') || (t.cubre && TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre)));
   if(choque) return { error:`Ya hay ${etiquetaInc(choque).toLowerCase()} registrada ese día.` };
   return d;
@@ -4587,7 +4660,8 @@ function imprimirFormatoInc(x){
   const c = state.colabsTodos.find(y => y.nombre === x.colaborador) || { nombre:x.colaborador, puesto:'', sucursal:x.sucursal };
   const esLlamado = x.tipo === 'llamado', esSusp = x.tipo === 'suspension';
   const titulo = esLlamado ? `Llamado de atención ${x.detalle ? '(' + x.detalle.toLowerCase() + ')' : ''}` : esSusp ? 'Acta de sanción: suspensión sin goce de sueldo' : 'Acta administrativa de incidencia';
-  const nSusp = esSusp ? diasEntre(x.fecha, x.hasta || x.fecha) : 0;
+  const nSusp = esSusp ? diasDe(x).length : 0;
+  const listaSusp = esSusp ? diasDe(x).map(f => fechaDoc(f)).join(', ') : '';
   const desde = sumarDias(x.fecha, -89);
   const previas = incVigentes().filter(y => y.colaborador === x.colaborador && y.id !== x.id && y.fecha >= desde && y.fecha <= x.fecha)
     .sort((a,b) => b.fecha.localeCompare(a.fecha));
@@ -4598,7 +4672,7 @@ function imprimirFormatoInc(x){
       <tr><th>Sucursal</th><td>${esc(x.sucursal || c.sucursal)}</td><th>Fecha de ingreso</th><td>${c.ingreso ? esc(fechaDoc(c.ingreso)) + ' (' + antig(c.ingreso, x.fecha) + ')' : '—'}</td></tr>
       <tr><th>Fecha de los hechos</th><td>${esc(fechaDoc(x.fecha))}${x.hasta ? ' al ' + esc(fechaDoc(x.hasta)) : ''}</td><th>Tipo</th><td>${esc(etiquetaInc(x))}</td></tr>
     </table>
-    ${esSusp ? `<table class="rp-datos"><tr><th>Sanción</th><td>Suspensión sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''}</td><th>Periodo</th><td>Del ${esc(fechaDoc(x.fecha))} al ${esc(fechaDoc(x.hasta || x.fecha))}</td></tr>
+    ${esSusp ? `<table class="rp-datos"><tr><th>Sanción</th><td>Suspensión sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''}</td><th>Días</th><td>${diasDe(x).map(f => esc(fechaMedia(f))).join(', ')}</td></tr>
       <tr><th>Fecha de regreso</th><td colspan="3">${esc(fechaDoc(sumarDias(x.hasta || x.fecha, 1)))}</td></tr></table>` : ''}
     <h3 class="rp-sec">${esSusp ? 'Motivo de la sanción' : 'Descripción de los hechos'}</h3>
     <div class="rp-caja">${x.descripcion ? esc(x.descripcion) : lineas(3)}</div>
@@ -4609,7 +4683,7 @@ function imprimirFormatoInc(x){
     <h3 class="rp-sec">Acuerdos y compromisos</h3>
     <div class="rp-caja">${lineas(3)}</div>
     <p class="rp-texto">${esSusp
-      ? `Con fundamento en el Reglamento Interior de Trabajo de la empresa y en el artículo 423, fracción X, de la Ley Federal del Trabajo, y habiendo sido escuchado(a) el colaborador(a) previamente, se le aplica una suspensión en sus labores sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''}, del ${fechaDoc(x.fecha)} al ${fechaDoc(x.hasta || x.fecha)}, debiendo presentarse a laborar el ${fechaDoc(sumarDias(x.hasta || x.fecha, 1))} en su horario habitual. En caso de reincidencia se aplicarán las medidas que correspondan conforme a dicho reglamento y a la ley.`
+      ? `Con fundamento en el Reglamento Interior de Trabajo de la empresa y en el artículo 423, fracción X, de la Ley Federal del Trabajo, y habiendo sido escuchado(a) el colaborador(a) previamente, se le aplica una suspensión en sus labores sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''} (${listaSusp}), debiendo presentarse a laborar el ${fechaDoc(sumarDias(x.hasta || x.fecha, 1))} en su horario habitual. En caso de reincidencia se aplicarán las medidas que correspondan conforme a dicho reglamento y a la ley.`
       : esLlamado
       ? 'Por medio del presente se hace un llamado de atención al colaborador(a) por los hechos descritos, exhortándole a apegarse a las políticas y al Reglamento Interior de Trabajo de la empresa. En caso de reincidencia, se aplicarán las medidas disciplinarias que correspondan conforme a dicho reglamento y a la Ley Federal del Trabajo.'
       : 'Se levanta la presente acta para dejar constancia de la incidencia descrita. El colaborador(a) tiene derecho a manifestar lo que a su interés convenga. La presente se integra a su expediente laboral.'}</p>
