@@ -187,6 +187,27 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;margin:0;letter-spacing:-.01em}
 .em-ptab td{text-align:center}
 .em-ptab td:nth-child(2){text-align:left}
 .em-ptab tr.gana td{background:#fff4d6;font-weight:800}
+.ac-item{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 2px;font-size:14px}
+.ac-item:last-child{border-bottom:0}
+button.ac-item:hover{background:var(--bg)}
+.ac-dia{flex:none;width:44px;height:44px;border-radius:12px;background:var(--cafe-bg);color:var(--brand);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:17px;line-height:1}
+.ac-dia small{font-size:9.5px;font-weight:700;text-transform:uppercase;margin-top:2px}
+.ac-item.fest .ac-dia{background:var(--err-bg);color:var(--err)}
+.ac-txt{flex:1;min-width:0}
+.ac-txt b{display:block}
+.ac-txt small{display:block;color:var(--muted);font-size:12.5px}
+.vn.ac{background:var(--cafe-bg);color:var(--brand)} .vn.ac-capacitacion{background:#e2f2fc;color:#0b5c8c} .vn.ac-convivio{background:#fff1d6;color:#8a5a00}
+.vn.ac-cierre{background:#e6e9ef;color:#14213d} .vn.ac-fest{background:#fde6e9;color:#c8102e}
+.ev-chips{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 12px}
+.ev-chip{display:inline-flex;align-items:center;gap:4px;background:var(--cafe-bg);color:var(--brand);border-radius:99px;padding:4px 6px 4px 10px;font-size:12.5px;font-weight:700}
+.ev-chip button{border:0;background:none;color:inherit;font-size:14px;padding:0 4px;cursor:pointer}
+.ev-pacc{margin:-6px 0 8px;display:flex;gap:14px;flex-wrap:wrap}
+.ev-cmsg{text-align:center;color:var(--muted);margin:0 0 12px}
+.ev-det p{margin:0 0 10px;color:var(--ink);text-align:left}
+.ev-det .ev-meta{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:4px 0 12px}
+.ev-det .ev-meta span{background:var(--bg);border-radius:99px;padding:4px 10px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.ev-det .ev-desc{white-space:pre-wrap;background:var(--bg);border-radius:12px;padding:10px 12px;font-size:14px}
+.ev-det .ev-pie{font-size:12px;color:var(--muted);text-align:center}
 .pie-ini{text-align:center;margin-top:22px}
 .linkbtn{background:none;border:0;color:var(--brand);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:8px 12px;border-radius:8px}
 .linkbtn:hover{background:var(--cafe-bg)}
@@ -383,7 +404,7 @@ body.solo-lectura #h-editar,body.solo-lectura #back,body.solo-lectura .demo{disp
 }
 
 .vn.i-falta{background:#fde6e9;color:#c8102e} .vn.i-ret{background:#fff1d6;color:#8a5a00} .vn.i-perm{background:#e3ecfb;color:#0b3c8c}
-.vn.i-incap{background:#f3e8ff;color:#6b21a8} .vn.i-llam{background:#e6e9ef;color:#14213d}
+.vn.i-incap{background:#f3e8ff;color:#6b21a8} .vn.i-llam{background:#e6e9ef;color:#14213d} .vn.i-susp{background:#3a0d12;color:#fff}
 #v-incidencias .legend .vn{display:inline-block}
 #ical .marks{flex-direction:column;flex-wrap:nowrap;gap:2px;min-width:0}
 #ical .day{min-width:0;overflow:hidden}
@@ -701,7 +722,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   .stat.bebida{background:var(--lg-soft);color:var(--lg-text)}
   .vdia,.vrow{border-color:var(--lg-line)}
   .vn.i-falta{background:rgba(255,59,48,.15);color:var(--lg-red-t)} .vn.i-ret{background:rgba(255,159,10,.18);color:var(--lg-amber-t)}
-  .vn.i-perm{background:rgba(10,122,255,.13);color:var(--lg-accent-t)} .vn.i-incap{background:rgba(175,82,222,.15);color:#8a3fb8} .vn.i-llam{background:var(--lg-soft);color:var(--lg-text)}
+  .vn.i-perm{background:rgba(10,122,255,.13);color:var(--lg-accent-t)} .vn.i-incap{background:rgba(175,82,222,.15);color:#8a3fb8} .vn.i-llam{background:var(--lg-soft);color:var(--lg-text)} .vn.i-susp{background:rgba(255,59,48,.85);color:#fff}
 
   /* ---------- Horarios (los colores de turnos se conservan) ---------- */
   .hwrap{overflow-x:auto}
@@ -781,6 +802,17 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   body.solo-lectura .top .brand{visibility:visible}
 }
 
+@media screen{
+  .ac-item{border-bottom-color:var(--lg-line);border-radius:14px;transition:background .25s}
+  button.ac-item:hover{background:var(--lg-soft)}
+  .ac-dia{background:rgba(10,122,255,.12);color:var(--lg-accent-t);border-radius:14px}
+  .ac-item.fest .ac-dia{background:rgba(255,59,48,.14);color:var(--lg-red-t)}
+  .vn.ac{background:rgba(10,122,255,.13);color:var(--lg-accent-t)} .vn.ac-capacitacion{background:rgba(52,165,111,.16);color:var(--lg-green-t)}
+  .vn.ac-convivio{background:rgba(255,159,10,.18);color:var(--lg-amber-t)} .vn.ac-cierre{background:var(--lg-soft);color:var(--lg-text)} .vn.ac-fest{background:rgba(255,59,48,.14);color:var(--lg-red-t)}
+  .ev-chip{background:rgba(10,122,255,.12);color:var(--lg-accent-t);border-radius:999px}
+  .ev-det .ev-meta span{background:var(--lg-soft);color:var(--lg-sec);border-radius:999px}
+  .ev-det .ev-desc{background:var(--lg-soft);border-radius:18px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
@@ -800,6 +832,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   <div class="lg-cap">Personal</div>
     <button class="lg-item" type="button" data-lg="cum"><svg class="lg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5h16M5.5 20.5V14a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v6.5M5.5 16.2c1.3.9 2.4.9 3.6 0s2.4-.9 3.6 0 2.4.9 3.6 0 1.5-.6 2.2-.6M12 12V8.5M12 6.3c.8 0 1.3-.6 1.3-1.3S12 2.8 12 2.8s-1.3 1.5-1.3 2.2.5 1.3 1.3 1.3z"/></svg><span>Cumpleaños</span></button>
     <button class="lg-item" type="button" data-lg="emp"><svg class="lg-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.7 13.4 7.5 21l4.5-2.6 4.5 2.6-1.2-7.6"/></svg><span>Empleado del mes</span></button>
+    <button class="lg-item" type="button" data-lg="act"><svg class="lg-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="m9.2 15 1.9 1.8 3.8-3.8"/></svg><span>Actividades</span></button>
     <button class="lg-item" type="button" data-lg="col"><svg class="lg-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.8 19.5c.8-3.3 3.3-5 6.2-5s5.4 1.7 6.2 5M16 5.2a3.5 3.5 0 0 1 0 6.6M17.6 14.7c1.8.6 3 2.2 3.6 4.8"/></svg><span>Colaboradores</span></button>
   <div class="lg-grow"></div><div class="lg-sep"></div>
     <button class="lg-item" type="button" data-lg="pw"><svg class="lg-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15.5" r="4"/><path d="m10.9 12.6 8.6-8.6M16.5 7l2.5 2.5M14 9.5l2 2"/></svg><span>Cambiar contraseña</span></button>
@@ -842,6 +875,9 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
       </button>
       <button class="cardbtn" id="irEmp">
         <span class="ic" style="background:#fff1d6">🏆</span><h3>Empleado del mes</h3><p>Evaluación mensual con la rúbrica de Jacobo y formato para firmar.</p>
+      </button>
+      <button class="cardbtn" id="irAct">
+        <span class="ic" style="background:#e3ecfb">📅</span><h3>Actividades</h3><p>Capacitaciones, posadas, juntas y eventos, con los días festivos oficiales.</p>
       </button>
       <button class="cardbtn" id="irInc">
         <span class="ic" style="background:#fde6e9">📋</span><h3>Incidencias</h3><p>Faltas, retardos, permisos, incapacidades y llamados de atención. Conectado con horarios.</p>
@@ -898,7 +934,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
         <div class="pills" id="ipills" style="margin-bottom:10px"></div>
         <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
         <div class="cal" id="ical"></div>
-        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span></div>
+        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span><span class="vn i-susp">⛔ Suspensión</span></div>
         <div class="vdia" id="idia"></div>
       </div>
       <aside class="panel side">
@@ -1009,6 +1045,35 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div id="em-estado"></div>
     <div class="em-grid" id="em-list"></div>
     <div class="panel em-res" id="em-res"></div>
+  </section>
+
+  <!-- ACTIVIDADES -->
+  <section class="view" id="v-actividades" hidden>
+    <div class="title prow">
+      <div><h2>Actividades y <span class="kw">eventos</span></h2><p>Capacitaciones, posadas, juntas y eventos de las sucursales, junto con los días festivos oficiales.</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="ac-print" style="flex:none">🖨️ Imprimir mes</button>
+        <button class="btn" id="ac-nueva" style="flex:none">+ Nueva actividad</button>
+      </div>
+    </div>
+    <div class="cal-layout">
+      <div class="panel">
+        <div class="calhead">
+          <button class="nav" id="ac-prev" aria-label="Mes anterior">‹</button>
+          <h3 id="ac-mes"></h3>
+          <button class="hoybtn" id="ac-hoy">Hoy</button>
+          <button class="nav" id="ac-next" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="pills" id="ac-pills" style="margin-bottom:10px"></div>
+        <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+        <div class="cal" id="ac-cal"></div>
+        <div class="legend" id="ac-leyenda"></div>
+      </div>
+      <aside class="panel side">
+        <h3 id="ac-lt">Este mes</h3>
+        <div id="ac-list"></div>
+      </aside>
+    </div>
   </section>
 
   <!-- VACACIONES -->
@@ -1207,6 +1272,47 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   </div>
 </div>
 
+<!-- Actividad: ver / nueva / editar / cancelar -->
+<div class="modal" id="ev-modal" hidden>
+  <div class="sheet fm-sheet">
+    <div id="ev-ver"></div>
+    <div id="ev-form">
+      <h3 id="ev-titulo">Nueva actividad</h3>
+      <div id="ev-campos">
+        <label>Nombre de la actividad<input id="ev-t" maxlength="120" placeholder="Ej. Posada navideña, Capacitación de servicio al cliente"></label>
+        <div class="dos">
+          <label>Tipo<select id="ev-tipo"></select></label>
+          <label>Sucursal<select id="ev-suc"><option>Todas</option><option>Río</option><option>Otay</option><option>Monarca</option></select></label>
+        </div>
+        <div class="dos">
+          <label>Fecha<input type="date" id="ev-f"></label>
+          <label>Hasta (opcional)<input type="date" id="ev-h"></label>
+        </div>
+        <div class="dos">
+          <label>Hora (opcional)<input type="time" id="ev-hora"></label>
+          <label>Lugar (opcional)<input id="ev-lugar" maxlength="120" placeholder="Ej. Sucursal Río"></label>
+        </div>
+        <label>Descripción (opcional)<textarea id="ev-desc" rows="3" maxlength="1500" placeholder="Qué se hará, quién imparte, qué llevar…"></textarea></label>
+        <label>Participantes (opcional)<input id="ev-pq" type="search" autocomplete="off" placeholder="Buscar colaborador para agregar…"></label>
+        <div class="pres" id="ev-pres" hidden></div>
+        <div class="ev-pacc"><button class="link" type="button" id="ev-ptodos">Agregar a todo el personal de la sucursal</button> <button class="link" type="button" id="ev-pquitar">Quitar todos</button></div>
+        <div class="ev-chips" id="ev-plist"></div>
+      </div>
+      <p id="ev-cmsg" class="ev-cmsg" hidden></p>
+      <div class="auth">
+        <div class="auth-t">🔒 Autoriza RH o dueño</div>
+        <label>Usuario<select id="ev-user"></select></label>
+        <label>Contraseña<input id="ev-pass" type="password" autocomplete="current-password"></label>
+      </div>
+      <div class="m-err" id="ev-err" hidden></div>
+      <div class="actions">
+        <button class="btn ghost" id="ev-no">Cancelar</button>
+        <button class="btn" id="ev-ok">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Contraseñas: cambiar la propia / RH restablece la de otro -->
 <div class="modal" id="pw-modal" hidden>
   <div class="sheet">
@@ -1307,7 +1413,8 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <label>Tipo<select id="i-tipo"></select></label>
           <label>Fecha<input type="date" id="i-fecha"></label>
         </div>
-        <label id="i-hasta-wrap">Hasta (si son varios días)<input type="date" id="i-hasta"></label>
+        <label id="i-hasta-wrap"><span id="i-hasta-lbl">Hasta (si son varios días)</span><input type="date" id="i-hasta"></label>
+        <div class="m-err aviso" id="i-susp-nota" hidden></div>
         <label id="i-min-wrap">Minutos de retardo<input type="number" id="i-min" min="1" max="600" step="1" inputmode="numeric" placeholder="Ej. 15"></label>
         <label id="i-sal-wrap">Hora en que salió<input type="time" id="i-sal"></label>
         <label id="i-llam-wrap">Tipo de llamado<select id="i-llam"><option>Verbal</option><option>Escrito</option></select></label>
@@ -1503,6 +1610,9 @@ const remote = {
   autorizarAcceso(d){ return this.post({action:'autorizarAcceso', ...d}); },
   cambiarContrasena(d){ return this.post({action:'cambiarContrasena', ...d}); },
   empleadoMes(mes){ return this.get({action:'empleadoMes', mes}); },
+  actividades(){ return this.get({action:'actividades'}); },
+  guardarActividad(d){ return this.post({action:'guardarActividad', ...d}); },
+  cancelarActividad(d){ return this.post({action:'cancelarActividad', ...d}); },
   guardarEvaluacion(d){ return this.post({action:'guardarEvaluacion', ...d}); },
   restablecerContrasena(d){ return this.post({action:'restablecerContrasena', ...d}); },
   incidencias(){ return this.get({action:'incidencias'}); },
@@ -1589,6 +1699,27 @@ const demo = {
   },
   async vacaciones(){ return lsGet('rh_demo_vac', []); },
   async empleadoMes(mes){ return Object.values(lsGet('rh_demo_emp', {})).filter(x => x.mes === mes); },
+  async actividades(){ return lsGet('rh_demo_act', []); },
+  async soloRH(d, msg){
+    const quien = this.verificar(d.encargado, d.contrasena);
+    if(!accesoTotal((await this.encargados()).find(x => x.nombre === quien))) throw new Error('AUTH|' + msg);
+    return quien;
+  },
+  async guardarActividad(d){
+    const quien = await this.soloRH(d, 'Solo RH o dueños pueden registrar actividades.');
+    const l = lsGet('rh_demo_act', []);
+    const datos = { fecha:d.fecha, hasta:d.hasta && d.hasta > d.fecha ? d.hasta : '', hora:d.hora || '', titulo:d.titulo, tipo:d.tipo, sucursal:d.sucursal,
+                    lugar:d.lugar || '', descripcion:d.descripcion || '', participantes:d.participantes || [] };
+    let x;
+    if(d.id){ x = l.find(y => y.id === d.id); Object.assign(x, datos, { edicion:`Editó ${quien} · ${hoyISO()} ${horaAhora()}` }); }
+    else { x = { id: Math.random().toString(36).slice(2,12), ...datos, registro:quien, fechaReg:hoyISO(), horaReg:horaAhora(), canceladoPor:'', fechaCancel:'', horaCancel:'', edicion:'' }; l.push(x); }
+    lsSet('rh_demo_act', l); return x;
+  },
+  async cancelarActividad(d){
+    const quien = await this.soloRH(d, 'Solo RH o dueños pueden cancelar actividades.');
+    const l = lsGet('rh_demo_act', []), x = l.find(y => y.id === d.id);
+    Object.assign(x, { canceladoPor:quien, fechaCancel:hoyISO(), horaCancel:horaAhora() }); lsSet('rh_demo_act', l); return x;
+  },
   async guardarEvaluacion(d){
     const quien = this.verificar(d.encargado, d.contrasena);
     const e = (await this.encargados()).find(x => x.nombre === quien);
@@ -1622,6 +1753,7 @@ const demo = {
   async incidencias(){ return lsGet('rh_demo_inc', []); },
   async registrarIncidencia(d){
     const registro = this.verificar(d.encargado, d.contrasena);
+    if(d.tipo === 'suspension' && !accesoTotal((await this.encargados()).find(x => x.nombre === registro))) throw new Error('AUTH|Solo RH o dueños pueden aplicar una suspensión.');
     const todas = lsGet('rh_demo_inc', []), t = TIPOS_INC[d.tipo], fin = d.hasta || d.fecha;
     const choque = todas.find(x => !x.canceladoPor && x.colaborador === d.colaborador && x.fecha <= fin && (x.hasta || x.fecha) >= d.fecha &&
       ((x.tipo === d.tipo && d.tipo !== 'llamado') || (t.cubre && TIPOS_INC[x.tipo].cubre)));
@@ -1750,7 +1882,7 @@ async function loadMes(y, m, force){
 }
 
 /* =================== NAVEGACIÓN =================== */
-const PADRE = { cumple:'inicio', empleado:'inicio', tipos:'inicio', colab:'tipos', calendario:'tipos', vacaciones:'inicio', personal:'inicio', horarios:'inicio', incidencias:'inicio', hoy:'inicio' };
+const PADRE = { actividades:'inicio', cumple:'inicio', empleado:'inicio', tipos:'inicio', colab:'tipos', calendario:'tipos', vacaciones:'inicio', personal:'inicio', horarios:'inicio', incidencias:'inicio', hoy:'inicio' };
 function show(v){
   document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== 'v-'+v);
   state.view = v;
@@ -3452,8 +3584,11 @@ const TIPOS_INC = {
   permiso_sin:  { txt:'Permiso sin goce',    ic:'📝', cls:'i-perm',   cubre:true, rango:true },
   incapacidad:  { txt:'Incapacidad',         ic:'🏥', cls:'i-incap',  cubre:true, rango:true },
   salida:       { txt:'Salida anticipada',   ic:'🚪', cls:'i-ret' },
-  llamado:      { txt:'Llamado de atención', ic:'📣', cls:'i-llam' }
+  llamado:      { txt:'Llamado de atención', ic:'📣', cls:'i-llam' },
+  suspension:   { txt:'Suspensión (sanción)', ic:'⛔', cls:'i-susp', cubre:true, rango:true }
 };
+const SUSP_MAX = 8;   // LFT art. 423 fr. X: la suspensión disciplinaria no puede exceder 8 días
+const diasEntre = (a, b) => Math.round((dUTC(b) - dUTC(a)) / 864e5) + 1;
 const RETARDOS_POR_FALTA = 3;   // regla interna
 const FALTAS_LIMITE = 3;        // LFT art. 47 fr. X: más de 3 faltas en 30 días
 
@@ -3461,6 +3596,7 @@ function etiquetaInc(x){
   if(x.tipo === 'retardo') return `Retardo ${x.minutos} min`;
   if(x.tipo === 'salida') return `Salida ${hora12(x.horaSalida)}`;
   if(x.tipo === 'llamado') return `Llamado ${x.detalle ? x.detalle.toLowerCase() : ''}`.trim();
+  if(x.tipo === 'suspension'){ const n = diasEntre(x.fecha, x.hasta || x.fecha); return `Suspensión ${n} día${n > 1 ? 's' : ''}`; }
   return TIPOS_INC[x.tipo] ? TIPOS_INC[x.tipo].txt : x.tipo;
 }
 const incVigentes = () => (state.inc || []).filter(x => !x.canceladoPor);
@@ -3523,7 +3659,16 @@ function pintarIncidencia(){
   $('#i-sal-wrap').hidden = $('#i-tipo').value !== 'salida';
   $('#i-llam-wrap').hidden = $('#i-tipo').value !== 'llamado';
   $('#i-folio-wrap').hidden = $('#i-tipo').value !== 'incapacidad';
-  $('#i-desc-lbl').firstChild.textContent = $('#i-tipo').value === 'llamado' ? 'Descripción de lo sucedido' : 'Descripción (opcional)';
+  const esSusp = $('#i-tipo').value === 'suspension';
+  $('#i-desc-lbl').firstChild.textContent = $('#i-tipo').value === 'llamado' ? 'Descripción de lo sucedido' : esSusp ? 'Motivo de la sanción' : 'Descripción (opcional)';
+  $('#i-hasta-lbl').textContent = esSusp ? 'Último día de la suspensión (vacío = 1 día)' : 'Hasta (si son varios días)';
+  $('#i-susp-nota').hidden = !esSusp;
+  if(esSusp){
+    const ini = $('#i-fecha').value, fin = $('#i-hasta').value && $('#i-hasta').value >= ini ? $('#i-hasta').value : ini;
+    const n = ini ? diasEntre(ini, fin) : 0;
+    $('#i-susp-nota').innerHTML = `⛔ Suspensión <b>sin goce de sueldo</b>. Solo la autoriza RH o un dueño. Máximo ${SUSP_MAX} días (LFT art. 423 fr. X) y debe estar prevista en el Reglamento Interior de Trabajo; el colaborador debe ser escuchado antes de aplicarla.` +
+      (n ? `<br><b>${n} día${n > 1 ? 's' : ''}</b>${n > SUSP_MAX ? ' · excede el máximo' : ` · regresa el ${esc(fechaLarga(sumarDias(fin, 1)))}`}` : '');
+  }
   // Lo que ya tiene ese día
   const f = $('#i-fecha').value;
   const ya = c && f ? incDe(c.nombre, f) : [];
@@ -3543,7 +3688,7 @@ $('#i-res').addEventListener('click', e => {
   if(!state.iSuc) state.iSuc = state.iSel.sucursal;
   $('#m-err').hidden = true; pintarIncidencia();
 });
-['#i-tipo','#i-fecha'].forEach(id => $(id).addEventListener('change', pintarIncidencia));
+['#i-tipo','#i-fecha','#i-hasta'].forEach(id => $(id).addEventListener('change', pintarIncidencia));
 
 function datosInc(){
   const c = state.iSel, tipo = $('#i-tipo').value, t = TIPOS_INC[tipo], fecha = $('#i-fecha').value;
@@ -3559,6 +3704,11 @@ function datosInc(){
   if(tipo === 'salida'){ d.horaSalida = $('#i-sal').value; if(!d.horaSalida) return { error:'Capturar la hora de salida.' }; }
   if(tipo === 'llamado'){ d.detalle = $('#i-llam').value; if(!d.descripcion) return { error:'Describir el motivo del llamado de atención.' }; }
   if(tipo === 'incapacidad' && $('#i-folio').value.trim()) d.detalle = 'Folio ' + $('#i-folio').value.trim();
+  if(tipo === 'suspension'){
+    if(!d.descripcion) return { error:'Escribir el motivo de la suspensión.' };
+    if(diasEntre(d.fecha, d.hasta || d.fecha) > SUSP_MAX) return { error:`La suspensión no puede ser mayor a ${SUSP_MAX} días (LFT art. 423 fr. X).` };
+    d.detalle = 'Sin goce de sueldo';
+  }
   // Choques del lado de la página (el servidor también revisa)
   const fin = d.hasta || d.fecha;
   const choque = incVigentes().find(x => x.colaborador === d.colaborador && x.fecha <= fin && (x.hasta || x.fecha) >= d.fecha &&
@@ -3657,7 +3807,7 @@ function filaInc(x, conNombre){
       ${x.descripcion ? `<small class="i-desc">${esc(x.descripcion)}</small>` : ''}
       <small class="autz">✔ Registró ${esc(x.registro || '—')} · ${esc(fechaCorta(x.fechaReg || x.fecha))} · ${esc(x.horaReg)}</small>
       ${x.canceladoPor ? `<small class="canc">✖ Canceló ${esc(x.canceladoPor)} · ${esc(fechaCorta(x.fechaCancel))} · ${esc(x.horaCancel)}</small>` : ''}</span>
-    ${x.canceladoPor ? '' : `<span class="i-acc"><button class="link" data-ip="${esc(x.id)}" title="Imprimir formato">🖨️ ${x.tipo === 'llamado' ? 'Llamado' : 'Acta'}</button><button class="del" data-iid="${esc(x.id)}">Cancelar</button></span>`}
+    ${x.canceladoPor ? '' : `<span class="i-acc"><button class="link" data-ip="${esc(x.id)}" title="Imprimir formato">🖨️ ${x.tipo === 'llamado' ? 'Llamado' : x.tipo === 'suspension' ? 'Acta de sanción' : 'Acta'}</button><button class="del" data-iid="${esc(x.id)}">Cancelar</button></span>`}
   </div>`;
 }
 document.addEventListener('click', e => {
@@ -3717,7 +3867,7 @@ function renderIncInfo(){
     ${htmlAlertas(alertasDe(s.nombre))}
     <div class="mini-t">${esc(MESES[m-1])} ${y}</div>
     ${stats}
-    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención</p>
+    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención · ${cuenta(['suspension'])} suspensiones</p>
     <div class="dethead"><b>Historial</b></div>
     <div class="det">${propias.length ? propias.map(x => filaInc(x, false)).join('') : `<div class="loading">Sin incidencias registradas.</div>`}</div>`;
   $('#iquitar').onclick = () => { state.isel = null; renderIncCal(); renderIncInfo(); };
@@ -3763,7 +3913,7 @@ function imprimirReporte(o){
   const vig = lista.filter(x => !x.canceladoPor);
   const periodo = o.desde === o.hasta ? nombreMes(o.desde) : `${nombreMes(o.desde)} a ${nombreMes(o.hasta)}`;
   const hoy = hoyISO();
-  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado'];
+  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado','suspension'];
   const resumen = `<table class="rp-tab rp-res"><thead><tr>${tiposOrden.map(t => `<th>${esc(TIPOS_INC[t].txt)}</th>`).join('')}</tr></thead>
     <tbody><tr>${tiposOrden.map(t => `<td>${vig.filter(x => x.tipo === t).length}</td>`).join('')}</tr></tbody></table>`;
   const detalle = x => [
@@ -3808,6 +3958,165 @@ function imprimirReporte(o){
   window.addEventListener('afterprint', fin);
   setTimeout(() => window.print(), 50);
 }
+
+/* =================== ACTIVIDADES =================== */
+const TIPOS_ACT = {
+  capacitacion: { txt:'Capacitación', ic:'📚' }, convivio: { txt:'Posada / convivio', ic:'🎉' }, evento: { txt:'Evento', ic:'📣' },
+  junta: { txt:'Junta', ic:'🗣️' }, cierre: { txt:'Cierre / día no laborable', ic:'🔒' }, otro: { txt:'Otro', ic:'📌' }
+};
+async function cargarActividades(){
+  try{ state.act = await api.actividades(); }
+  catch(e){ toast('No se pudieron cargar las actividades: ' + e.message, true); state.act = state.act || []; }
+}
+const actVigentes = () => (state.act || []).filter(a => !a.canceladoPor);
+// Actividades (y festivos oficiales) que tocan el rango [desde, hasta]
+function actividadesEntre(desde, hasta, suc){
+  const l = actVigentes().filter(a => a.fecha <= hasta && (a.hasta || a.fecha) >= desde && (!suc || suc === 'Todas' || a.sucursal === 'Todas' || a.sucursal === suc));
+  for(let y = +desde.slice(0,4); y <= +hasta.slice(0,4); y++)
+    Object.entries(festivos(y)).forEach(([f, n]) => { if(f >= desde && f <= hasta) l.push({ id:'fest-' + f, fecha:f, hasta:'', titulo:n, fest:true, sucursal:'Todas' }); });
+  return l.sort((a,b) => a.fecha.localeCompare(b.fecha) || (a.hora || '').localeCompare(b.hora || '') || (a.fest ? -1 : 0));
+}
+async function abrirActividades(){
+  show('actividades');
+  const h = hoyISO();
+  state.acal = state.acal || { y:+h.slice(0,4), m:+h.slice(5,7) };
+  state.asuc = state.asuc || 'Todas';
+  $('#ac-nueva').hidden = false;
+  $('#ac-cal').innerHTML = `<div class="loading">Cargando…</div>`;
+  await cargarActividades();
+  renderActividades();
+}
+function renderActividades(){
+  const { y, m } = state.acal, ini = `${y}-${pad(m)}-01`, fin = `${y}-${pad(m)}-${pad(new Date(y, m, 0).getDate())}`;
+  $('#ac-mes').textContent = `${MESES[m-1]} ${y}`;
+  $('#ac-pills').innerHTML = ['Todas', ...SUCURSALES].map(s => `<button class="pill ${s===state.asuc?'on':''}" data-s="${s}">${s}</button>`).join('');
+  document.querySelectorAll('#ac-pills .pill').forEach(p => p.onclick = () => { state.asuc = p.dataset.s; renderActividades(); });
+  const lista = actividadesEntre(ini, fin, state.asuc), hoy = hoyISO();
+  const porDia = {};
+  lista.forEach(a => { let f = a.fecha < ini ? ini : a.fecha; const ult = (a.hasta || a.fecha) > fin ? fin : (a.hasta || a.fecha); let g = 0;
+    while(f <= ult && g++ < 40){ (porDia[f] = porDia[f] || []).push(a); f = sumarDias(f, 1); } });
+  const offset = (new Date(y, m-1, 1).getDay() + 6) % 7;
+  let html = '';
+  for(let i = 0; i < offset; i++) html += `<div class="day blank"></div>`;
+  for(let d = 1; d <= new Date(y, m, 0).getDate(); d++){
+    const f = `${y}-${pad(m)}-${pad(d)}`, l = porDia[f] || [], fest = l.some(a => a.fest);
+    let chips = l.slice(0, 3).map(a => `<span class="vn ${a.fest ? 'ac-fest' : 'ac ac-' + a.tipo}" title="${esc(a.titulo)}"><span class="full">${a.fest ? '🇲🇽' : TIPOS_ACT[a.tipo].ic} ${esc(a.titulo)}</span><span class="ini">${a.fest ? '🇲🇽' : TIPOS_ACT[a.tipo].ic}</span></span>`).join('');
+    if(l.length > 3) chips += `<span class="vn mas">+${l.length - 3}</span>`;
+    html += `<button class="day ${f===hoy?'hoy':''} ${f===state.adia?'sel':''} ${fest?'fest':''}" data-f="${f}"><span class="n">${d}</span><span class="marks">${chips}</span></button>`;
+  }
+  $('#ac-cal').innerHTML = html;
+  $('#ac-leyenda').innerHTML = Object.entries(TIPOS_ACT).map(([k, t]) => `<span class="vn ac ac-${k}">${t.ic} ${esc(t.txt)}</span>`).join('') + `<span class="vn ac-fest">🇲🇽 Festivo oficial</span>`;
+  const enLista = state.adia ? (porDia[state.adia] || []) : lista;
+  $('#ac-lt').textContent = state.adia ? fechaLarga(state.adia) : `Actividades de ${MESES[m-1]}`;
+  $('#ac-list').innerHTML = (state.adia ? `<button class="link" type="button" id="ac-todo" style="margin-bottom:8px">← Ver todo el mes</button>` : '') +
+    (enLista.length ? enLista.map(a => {
+      const meta = a.fest ? 'Día de descanso obligatorio (LFT art. 74)' :
+        [TIPOS_ACT[a.tipo].txt, a.hasta ? `hasta ${fechaMedia(a.hasta)}` : '', a.hora ? hora12(a.hora) : '', a.sucursal === 'Todas' ? 'Todas las sucursales' : a.sucursal, a.lugar].filter(Boolean).map(esc).join(' · ');
+      const tag = a.fest ? 'div' : 'button';
+      return `<${tag} class="ac-item ${a.fest ? 'fest' : ''}" ${a.fest ? '' : `type="button" data-ac="${esc(a.id)}"`}><span class="ac-dia">${+a.fecha.slice(8)}<small>${MESES_C[+a.fecha.slice(5,7)-1]}</small></span>
+        <span class="ac-txt"><b>${a.fest ? '🇲🇽' : TIPOS_ACT[a.tipo].ic} ${esc(a.titulo)}</b><small>${meta}</small>${a.participantes && a.participantes.length ? `<small>👥 ${a.participantes.length} participante${a.participantes.length > 1 ? 's' : ''}</small>` : ''}</span></${tag}>`;
+    }).join('') : `<div class="loading">${state.adia ? 'Sin actividades este día.' : 'Sin actividades registradas en este mes.'}</div>`);
+  if($('#ac-todo')) $('#ac-todo').onclick = () => { state.adia = null; renderActividades(); };
+}
+$('#ac-cal').addEventListener('click', e => { const d = e.target.closest('.day[data-f]'); if(!d) return; state.adia = state.adia === d.dataset.f ? null : d.dataset.f; renderActividades(); });
+$('#ac-list').addEventListener('click', e => { const b = e.target.closest('[data-ac]'); if(!b) return; const a = (state.act || []).find(x => x.id === b.dataset.ac); if(a) abrirEv('ver', a); });
+function moverActMes(n){ let { y, m } = state.acal; m += n; if(m < 1){ m = 12; y--; } if(m > 12){ m = 1; y++; } state.acal = { y, m }; state.adia = null; renderActividades(); }
+$('#ac-prev').onclick = () => moverActMes(-1);
+$('#ac-next').onclick = () => moverActMes(1);
+$('#ac-hoy').onclick = () => { const h = hoyISO(); state.acal = { y:+h.slice(0,4), m:+h.slice(5,7) }; state.adia = null; renderActividades(); };
+$('#ac-nueva').onclick = () => abrirEv('nuevo', null);
+$('#ac-print').onclick = () => {
+  const { y, m } = state.acal, ini = `${y}-${pad(m)}-01`, fin = `${y}-${pad(m)}-${pad(new Date(y, m, 0).getDate())}`;
+  const l = actividadesEntre(ini, fin, state.asuc);
+  imprimirDoc(encabezadoDoc(`Actividades de ${MESES[m-1]} ${y}`) + `
+    <table class="rp-datos"><tr><th>Sucursal</th><td>${esc(state.asuc === 'Todas' ? 'Río, Otay y Monarca' : state.asuc)}</td><th>Mes</th><td>${esc(MESES[m-1])} ${y}</td></tr></table>
+    ${l.length ? `<table class="rp-tab" style="margin-top:10px"><thead><tr><th style="width:17%">Fecha</th><th>Actividad</th><th style="width:16%">Tipo</th><th style="width:10%">Hora</th><th style="width:20%">Sucursal / lugar</th></tr></thead><tbody>${l.map(a => `<tr><td>${esc(fechaMedia(a.fecha))}${a.hasta ? ' al ' + esc(fechaMedia(a.hasta)) : ''}</td><td><b>${esc(a.titulo)}</b>${a.descripcion ? `<br><small>${esc(a.descripcion)}</small>` : ''}${a.participantes && a.participantes.length ? `<br><small>Participantes: ${a.participantes.map(esc).join(', ')}</small>` : ''}</td><td>${a.fest ? 'Festivo oficial' : esc(TIPOS_ACT[a.tipo].txt)}</td><td>${a.hora ? esc(hora12(a.hora)) : '—'}</td><td>${esc(a.fest ? 'Todas' : a.sucursal)}${a.lugar ? '<br><small>' + esc(a.lugar) + '</small>' : ''}</td></tr>`).join('')}</tbody></table>` : '<p class="rp-nada">Sin actividades registradas en este mes.</p>'}
+    <div class="rp-pie">Documento generado desde el sistema de RH de Jacobo el ${esc(fechaDoc(hoyISO()))} a las ${esc(horaAhora())}.</div>`);
+};
+
+// Ventana de actividad
+function abrirEv(modo, a){
+  state.evModo = modo; state.evAct = a; state.evPart = a && a.participantes ? a.participantes.slice() : [];
+  $('#ev-err').hidden = true;
+  const ver = modo === 'ver', canc = modo === 'cancelar';
+  $('#ev-ver').hidden = !ver; $('#ev-form').hidden = ver;
+  if(ver){
+    const t = TIPOS_ACT[a.tipo] || TIPOS_ACT.otro;
+    $('#ev-ver').innerHTML = `<div class="ev-det"><div class="big">${t.ic}</div><h3 style="text-align:center">${esc(a.titulo)}</h3>
+      <div class="ev-meta"><span>${esc(t.txt)}</span><span>${esc(fechaLarga(a.fecha))}${a.hasta ? ' al ' + esc(fechaMedia(a.hasta)) : ''}</span>${a.hora ? `<span>${esc(hora12(a.hora))}</span>` : ''}<span>${esc(a.sucursal === 'Todas' ? 'Todas las sucursales' : a.sucursal)}</span>${a.lugar ? `<span>📍 ${esc(a.lugar)}</span>` : ''}</div>
+      ${a.descripcion ? `<p class="ev-desc">${esc(a.descripcion)}</p>` : ''}
+      ${a.participantes && a.participantes.length ? `<p><b>Participantes (${a.participantes.length}):</b> ${a.participantes.map(esc).join(', ')}</p>` : ''}
+      <p class="ev-pie">Registró ${esc(a.registro)} el ${esc(fechaMedia(a.fechaReg))} ${esc(a.horaReg)}${a.edicion ? ' · ' + esc(a.edicion) : ''}</p>
+      <div class="actions"><button class="btn ghost" type="button" id="ev-cerrar">Cerrar</button><button class="btn ghost" type="button" id="ev-cancelar" style="color:var(--err)">Cancelar actividad</button><button class="btn" type="button" id="ev-editar">Editar</button></div></div>`;
+    $('#ev-cerrar').onclick = () => { $('#ev-modal').hidden = true; };
+    $('#ev-editar').onclick = () => abrirEv('editar', a);
+    $('#ev-cancelar').onclick = () => abrirEv('cancelar', a);
+    $('#ev-modal').hidden = false; return;
+  }
+  $('#ev-titulo').textContent = modo === 'nuevo' ? 'Nueva actividad' : canc ? 'Cancelar actividad' : 'Editar actividad';
+  $('#ev-campos').hidden = canc;
+  $('#ev-cmsg').hidden = !canc;
+  if(canc) $('#ev-cmsg').innerHTML = `<b>${esc(a.titulo)}</b><br>${esc(fechaLarga(a.fecha))}. Se quita del calendario, pero queda en el historial.`;
+  $('#ev-tipo').innerHTML = Object.entries(TIPOS_ACT).map(([k, t]) => `<option value="${k}">${t.ic} ${esc(t.txt)}</option>`).join('');
+  $('#ev-t').value = a ? a.titulo : ''; $('#ev-tipo').value = a ? a.tipo : 'capacitacion'; $('#ev-suc').value = a ? a.sucursal : (state.asuc || 'Todas');
+  $('#ev-f').value = a ? a.fecha : (state.adia || hoyISO()); $('#ev-h').value = a ? a.hasta : ''; $('#ev-hora').value = a ? a.hora : '';
+  $('#ev-lugar').value = a ? a.lugar : ''; $('#ev-desc').value = a ? a.descripcion : ''; $('#ev-pq').value = ''; $('#ev-pres').hidden = true;
+  const guardado = lsGet('rh_encargado', '');
+  $('#ev-user').innerHTML = '<option value="">Elegir…</option>' + (state.encargados || []).filter(accesoTotal).map(e => `<option ${e.nombre === guardado ? 'selected' : ''}>${esc(e.nombre)}</option>`).join('');
+  $('#ev-pass').value = '';
+  $('#ev-ok').textContent = canc ? 'Cancelar actividad' : 'Guardar';
+  $('#ev-ok').classList.toggle('danger', canc);
+  $('#ev-no').textContent = canc ? 'Volver' : 'Cancelar';
+  pintarEvPart();
+  $('#ev-modal').hidden = false;
+}
+function pintarEvPart(){
+  $('#ev-plist').innerHTML = state.evPart.map((n, i) => `<span class="ev-chip">${esc(nombreCorto(n))}<button type="button" data-q="${i}" aria-label="Quitar">×</button></span>`).join('');
+}
+$('#ev-plist').addEventListener('click', e => { const b = e.target.closest('[data-q]'); if(!b) return; state.evPart.splice(+b.dataset.q, 1); pintarEvPart(); });
+$('#ev-pq').addEventListener('input', () => {
+  const q = norm($('#ev-pq').value.trim());
+  if(!q){ $('#ev-pres').hidden = true; return; }
+  const l = (state.colabs || []).filter(c => !state.evPart.includes(c.nombre) && norm(c.nombre + ' ' + c.puesto + ' ' + c.sucursal).includes(q)).slice(0, 6);
+  $('#ev-pres').hidden = false;
+  $('#ev-pres').innerHTML = l.length ? l.map(c => `<button type="button" data-n="${esc(c.nombre)}"><span class="nm">${esc(c.nombre)}<small>${esc(c.puesto)} · ${esc(c.sucursal || 'Sin sucursal')}</small></span></button>`).join('') : `<div class="vacio">Sin coincidencias.</div>`;
+});
+$('#ev-pres').addEventListener('click', e => { const b = e.target.closest('[data-n]'); if(!b) return; state.evPart.push(b.dataset.n); $('#ev-pq').value = ''; $('#ev-pres').hidden = true; pintarEvPart(); $('#ev-pq').focus(); });
+$('#ev-ptodos').onclick = () => {
+  const s = $('#ev-suc').value;
+  (state.colabs || []).filter(c => s === 'Todas' || c.sucursal === s).forEach(c => { if(!state.evPart.includes(c.nombre)) state.evPart.push(c.nombre); });
+  pintarEvPart();
+};
+$('#ev-pquitar').onclick = () => { state.evPart = []; pintarEvPart(); };
+$('#ev-no').onclick = () => { if(state.evModo === 'editar' || state.evModo === 'cancelar') abrirEv('ver', state.evAct); else $('#ev-modal').hidden = true; };
+$('#ev-pass').addEventListener('keydown', e => { if(e.key === 'Enter') $('#ev-ok').click(); });
+$('#ev-ok').onclick = async () => {
+  const err = t => { $('#ev-err').textContent = t; $('#ev-err').hidden = false; };
+  const canc = state.evModo === 'cancelar';
+  const auth = { encargado: $('#ev-user').value, contrasena: $('#ev-pass').value };
+  let d = null;
+  if(!canc){
+    d = { id: state.evAct ? state.evAct.id : '', titulo: $('#ev-t').value.trim(), tipo: $('#ev-tipo').value, sucursal: $('#ev-suc').value,
+          fecha: $('#ev-f').value, hasta: $('#ev-h').value, hora: $('#ev-hora').value, lugar: $('#ev-lugar').value.trim(),
+          descripcion: $('#ev-desc').value.trim(), participantes: state.evPart };
+    if(!d.titulo) return err('Escribir el nombre de la actividad.');
+    if(!d.fecha) return err('Elegir la fecha.');
+    if(d.hasta && d.hasta < d.fecha) return err('La fecha "hasta" no puede ser antes del inicio.');
+  }
+  if(!auth.encargado) return err('Elegir quién autoriza (RH o dueño).');
+  if(!auth.contrasena) return err('Escribir la contraseña.');
+  lsSet('rh_encargado', auth.encargado);
+  const b = $('#ev-ok'), t0 = b.textContent; b.disabled = true; b.textContent = 'Verificando…'; $('#ev-err').hidden = true;
+  try{
+    const r = canc ? await api.cancelarActividad({ id: state.evAct.id, ...auth }) : await api.guardarActividad({ ...d, ...auth });
+    state.act = (state.act || []).filter(x => x.id !== r.id).concat(r);
+    $('#ev-modal').hidden = true;
+    toast(canc ? `Actividad cancelada por ${r.canceladoPor}` : `✓ ${state.evModo === 'nuevo' ? 'Actividad registrada' : 'Actividad actualizada'}: ${r.titulo}`);
+    if(!canc){ state.acal = { y:+r.fecha.slice(0,4), m:+r.fecha.slice(5,7) }; }
+    if(state.view === 'actividades') renderActividades();
+  }catch(e){ err(e.message.replace(/^AUTH\|/, '')); $('#ev-pass').value = ''; }
+  b.disabled = false; b.textContent = t0;
+};
 
 /* =================== CUMPLEAÑOS =================== */
 // c.cumple = 'MM-DD'. 29 de febrero se celebra el 28 en años no bisiestos.
@@ -3894,7 +4203,7 @@ async function cargarEmpleado(){
 function incMes(nombre, ym){
   const l = incVigentes().filter(x => x.colaborador === nombre && x.fecha.slice(0,7) === ym);
   const n = t => l.filter(x => x.tipo === t).length;
-  return { faltas:n('falta'), retardos:n('retardo'), llamados:n('llamado') };
+  return { faltas:n('falta'), retardos:n('retardo'), llamados:n('llamado'), suspensiones:n('suspension') };
 }
 function renderEmpleado(){
   const ym = state.emes;
@@ -3909,7 +4218,7 @@ function renderEmpleado(){
   if(!state.edatos.length){ $('#em-list').innerHTML = `<div class="empty">No hay colaboradores activos en ${esc(state.esuc)}.</div>`; $('#em-res').innerHTML = ''; return; }
   $('#em-list').innerHTML = state.edatos.map((x, i) => {
     const t = puntosEval(x.cal), r = incMes(x.nombre, ym), completa = evalCompleta(x.cal);
-    const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`].filter(Boolean);
+    const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`, r.suspensiones && `${r.suspensiones} suspensión${r.suspensiones>1?'es':''}`].filter(Boolean);
     return `<div class="em-card ${completa && x.nombre === sugerido ? 'gana' : ''}" data-i="${i}">
       <div class="em-head"><div><b>${completa && x.nombre === sugerido ? '🏆 ' : ''}${esc(x.nombre)}</b><small>${esc(x.puesto || '')}</small></div>
         <span class="em-tot">${t}<small>${completa ? 'de 100' : 'incompleta'}</small></span></div>
@@ -3996,7 +4305,7 @@ async function abrirHoy(){
   state.hoyFiltro = state.hoyFiltro || lsGet('rh_sucursal', '') || 'Todas';
   renderHoyPills();
   $('#hoy-grid').innerHTML = `<div class="loading">Cargando…</div>`;
-  await Promise.all([cargarVacaciones(), cargarIncidencias(), cargarTurnosHoy()]);
+  await Promise.all([cargarVacaciones(), cargarIncidencias(), cargarTurnosHoy(), cargarActividades()]);
   renderHoy();
 }
 async function cargarTurnosHoy(){
@@ -4084,6 +4393,9 @@ function renderHoy(){
     incHoy.length ? corta('inc', incHoy.map(x => persona(x.colaborador, `${TIPOS_INC[x.tipo].ic} ${esc(etiquetaInc(x))} · ${esc(x.sucursal)}`, 'inc'))) : vacio('Sin incidencias registradas.'));
   html += caja('🎉', 'Aniversarios (7 días)', aniv.length,
     aniv.length ? aniv.map(a => persona(a.c.nombre, `${a.falta === 0 ? '<b>Hoy</b>' : esc(fechaMedia(a.d))} · cumple ${a.n} año${a.n>1?'s':''} · le corresponden ${diasLFT(a.n)} días`, 'vac')).join('') : vacio('Sin aniversarios esta semana.'));
+  const proxAct = actividadesEntre(f, sumarDias(f, 7), filtro);
+  html += caja('📅', 'Actividades (7 días)', proxAct.length,
+    proxAct.length ? proxAct.map(a => `<div class="hoy-p"><b>${a.fest ? '🇲🇽' : TIPOS_ACT[a.tipo].ic} ${esc(a.titulo)}</b><small>${a.fecha === f ? '<b>Hoy</b>' : esc(fechaMedia(a.fecha))}${a.hasta ? ' al ' + esc(fechaMedia(a.hasta)) : ''}${a.hora ? ' · ' + esc(hora12(a.hora)) : ''}${a.fest ? ' · festivo oficial' : ' · ' + esc(a.sucursal === 'Todas' ? 'todas las sucursales' : a.sucursal)}</small></div>`).join('') : vacio('Sin actividades esta semana.'));
   const cums = proximosCumples(f, 7).filter(x => deSuc(x.c));
   html += caja('🎂', 'Cumpleaños (7 días)', cums.length,
     cums.length ? cums.map(x => persona(x.c.nombre, `${x.falta === 0 ? '<b>Hoy</b>' : esc(fechaMedia(x.d))} · ${esc(x.c.sucursal || 'sin sucursal')}`)).join('') : vacio('Nadie cumple años esta semana.'));
@@ -4153,6 +4465,11 @@ const TOURS = {
     { s:'#iq', t:'Buscar colaborador', x:'Muestra su historial, contadores y alertas.' },
     { s:'#ical', t:'Calendario', x:'Incidencias del mes. Tocar un día para ver el detalle.' },
     { s:'#iinfo', t:'Registrar e imprimir', x:'Registrar una incidencia o imprimir el reporte por mes, con espacio para firmas.' }
+  ],
+  actividades: [
+    { s:'#ac-cal', t:'Calendario', x:'Capacitaciones, posadas, juntas y eventos, junto con los días festivos oficiales. Tocar un día para ver su detalle.' },
+    { s:'#ac-nueva', t:'Nueva actividad', x:'RH o dueños registran la actividad: tipo, fecha, hora, sucursal, lugar y participantes.' },
+    { s:'#ac-print', t:'Imprimir', x:'Imprime las actividades del mes para pegarlas en la sucursal.' }
   ],
   cumple: [
     { s:'#cu-pills', t:'Por sucursal', x:'Ver los cumpleaños del mes de todas las sucursales o de una sola.' },
@@ -4268,8 +4585,9 @@ function imprimirConstancia(){
 // Llamado de atención / acta de incidencia, prellenado desde la incidencia
 function imprimirFormatoInc(x){
   const c = state.colabsTodos.find(y => y.nombre === x.colaborador) || { nombre:x.colaborador, puesto:'', sucursal:x.sucursal };
-  const esLlamado = x.tipo === 'llamado';
-  const titulo = esLlamado ? `Llamado de atención ${x.detalle ? '(' + x.detalle.toLowerCase() + ')' : ''}` : 'Acta administrativa de incidencia';
+  const esLlamado = x.tipo === 'llamado', esSusp = x.tipo === 'suspension';
+  const titulo = esLlamado ? `Llamado de atención ${x.detalle ? '(' + x.detalle.toLowerCase() + ')' : ''}` : esSusp ? 'Acta de sanción: suspensión sin goce de sueldo' : 'Acta administrativa de incidencia';
+  const nSusp = esSusp ? diasEntre(x.fecha, x.hasta || x.fecha) : 0;
   const desde = sumarDias(x.fecha, -89);
   const previas = incVigentes().filter(y => y.colaborador === x.colaborador && y.id !== x.id && y.fecha >= desde && y.fecha <= x.fecha)
     .sort((a,b) => b.fecha.localeCompare(a.fecha));
@@ -4280,7 +4598,9 @@ function imprimirFormatoInc(x){
       <tr><th>Sucursal</th><td>${esc(x.sucursal || c.sucursal)}</td><th>Fecha de ingreso</th><td>${c.ingreso ? esc(fechaDoc(c.ingreso)) + ' (' + antig(c.ingreso, x.fecha) + ')' : '—'}</td></tr>
       <tr><th>Fecha de los hechos</th><td>${esc(fechaDoc(x.fecha))}${x.hasta ? ' al ' + esc(fechaDoc(x.hasta)) : ''}</td><th>Tipo</th><td>${esc(etiquetaInc(x))}</td></tr>
     </table>
-    <h3 class="rp-sec">Descripción de los hechos</h3>
+    ${esSusp ? `<table class="rp-datos"><tr><th>Sanción</th><td>Suspensión sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''}</td><th>Periodo</th><td>Del ${esc(fechaDoc(x.fecha))} al ${esc(fechaDoc(x.hasta || x.fecha))}</td></tr>
+      <tr><th>Fecha de regreso</th><td colspan="3">${esc(fechaDoc(sumarDias(x.hasta || x.fecha, 1)))}</td></tr></table>` : ''}
+    <h3 class="rp-sec">${esSusp ? 'Motivo de la sanción' : 'Descripción de los hechos'}</h3>
     <div class="rp-caja">${x.descripcion ? esc(x.descripcion) : lineas(3)}</div>
     <h3 class="rp-sec">Incidencias registradas en los 90 días anteriores</h3>
     ${previas.length ? `<table class="rp-tab"><thead><tr><th style="width:22%">Fecha</th><th style="width:28%">Incidencia</th><th>Descripción</th></tr></thead><tbody>${previas.map(y => `<tr><td>${esc(fechaMedia(y.fecha))} ${y.fecha.slice(0,4)}</td><td>${esc(etiquetaInc(y))}</td><td>${esc(y.descripcion || '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="rp-nada">Sin incidencias previas en ese periodo.</p>'}
@@ -4288,7 +4608,9 @@ function imprimirFormatoInc(x){
     <div class="rp-caja">${lineas(3)}</div>
     <h3 class="rp-sec">Acuerdos y compromisos</h3>
     <div class="rp-caja">${lineas(3)}</div>
-    <p class="rp-texto">${esLlamado
+    <p class="rp-texto">${esSusp
+      ? `Con fundamento en el Reglamento Interior de Trabajo de la empresa y en el artículo 423, fracción X, de la Ley Federal del Trabajo, y habiendo sido escuchado(a) el colaborador(a) previamente, se le aplica una suspensión en sus labores sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''}, del ${fechaDoc(x.fecha)} al ${fechaDoc(x.hasta || x.fecha)}, debiendo presentarse a laborar el ${fechaDoc(sumarDias(x.hasta || x.fecha, 1))} en su horario habitual. En caso de reincidencia se aplicarán las medidas que correspondan conforme a dicho reglamento y a la ley.`
+      : esLlamado
       ? 'Por medio del presente se hace un llamado de atención al colaborador(a) por los hechos descritos, exhortándole a apegarse a las políticas y al Reglamento Interior de Trabajo de la empresa. En caso de reincidencia, se aplicarán las medidas disciplinarias que correspondan conforme a dicho reglamento y a la Ley Federal del Trabajo.'
       : 'Se levanta la presente acta para dejar constancia de la incidencia descrita. El colaborador(a) tiene derecho a manifestar lo que a su interés convenga. La presente se integra a su expediente laboral.'}</p>
     <p class="rp-leyenda">La firma del colaborador(a) hace constar que recibió y conoce el contenido de este documento, no necesariamente su conformidad con el mismo.</p>
@@ -4423,6 +4745,7 @@ $('#irVac').onclick = abrirVacaciones;
 $('#irPersonal').onclick = () => conAcceso(abrirPersonal, 'Colaboradores');
 $('#irHor').onclick = abrirHorarios;
 $('#irCum').onclick = abrirCumple;
+$('#irAct').onclick = abrirActividades;
 $('#irEmp').onclick = abrirEmpleado;
 $('#irInc').onclick = abrirIncidencias;
 $('#irHoy').onclick = () => conAcceso(abrirHoy, 'Hoy');
@@ -4454,8 +4777,8 @@ init();
    (respeta el aviso de "cambios sin guardar") y luego toca el botón correspondiente de la pantalla de inicio. */
 (function(){
   const vista = () => { const v = document.querySelector('main .view:not([hidden])'); return v ? v.id.slice(2) : 'inicio'; };
-  const GRUPO = { inicio:'inicio', hoy:'hoy', tipos:'ben', colab:'ben', calendario:'ben', horarios:'hor', incidencias:'inc', vacaciones:'vac', cumple:'cum', empleado:'emp', personal:'col' };
-  const DESTINO = { ben:'[data-go="tipos"]', hor:'#irHor', inc:'#irInc', vac:'#irVac', cum:'#irCum', emp:'#irEmp', hoy:'#irHoy', col:'#irPersonal', pw:'#irPw' };
+  const GRUPO = { inicio:'inicio', hoy:'hoy', tipos:'ben', colab:'ben', calendario:'ben', horarios:'hor', incidencias:'inc', vacaciones:'vac', cumple:'cum', empleado:'emp', personal:'col', actividades:'act' };
+  const DESTINO = { ben:'[data-go="tipos"]', hor:'#irHor', inc:'#irInc', vac:'#irVac', cum:'#irCum', emp:'#irEmp', act:'#irAct', hoy:'#irHoy', col:'#irPersonal', pw:'#irPw' };
   async function alInicio(){
     for(let i = 0; i < 5; i++){
       const v = vista(); if(v === 'inicio') return true;
