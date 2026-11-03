@@ -1049,7 +1049,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   <!-- EMPLEADO DEL MES -->
   <section class="view" id="v-empleado" hidden>
     <div class="title prow">
-      <div><h2>Empleado del <span class="kw">mes</span></h2><p>Calificar a cada colaborador de 1 a 5 en cada criterio. La app suma los puntos (máximo 100).</p></div>
+      <div><h2>Empleado del <span class="kw">mes</span></h2><p>Participa el personal que atiende clientes: embajadores, barra y cajas. Calificar de 1 a 5 cada criterio; la app suma los puntos (máximo 100).</p></div>
       <button class="btn ghost" id="em-print" style="flex:none">🖨️ Imprimir formato</button>
     </div>
     <div class="calhead cu-nav">
@@ -4265,7 +4265,8 @@ async function cargarEmpleado(){
   catch(e){ toast('No se pudo cargar la evaluación: ' + e.message, true); state.eguard = null; }
   // Borrador: lo guardado, o en blanco con el personal activo de la sucursal
   const prev = {}; (state.eguard ? state.eguard.evaluaciones : []).forEach(x => prev[x.nombre] = x.cal);
-  const activos = (state.colabs || []).filter(c => c.sucursal === state.esuc);
+  // Solo personal que atiende clientes: embajadores (atención a cliente), barra (baristas) y cajas
+  const activos = (state.colabs || []).filter(c => c.sucursal === state.esuc && ['Cajas', 'Embajadores'].includes(areaDe(c.puesto)));
   const nombres = [...new Set([...(state.eguard ? state.eguard.evaluaciones.map(x => x.nombre) : []), ...activos.map(c => c.nombre)])];
   state.edatos = nombres.map(n => { const c = (state.colabsTodos || []).find(x => x.nombre === n) || { nombre:n, puesto:'' };
     return { nombre:n, puesto:c.puesto, cal: { ...(prev[n] || {}) } }; }).sort((a,b) => a.nombre.localeCompare(b.nombre,'es'));
@@ -4288,7 +4289,7 @@ function renderEmpleado(){
   const comp = state.edatos.filter(x => evalCompleta(x.cal)).map(x => ({ ...x, total: puntosEval(x.cal) })).sort((a,b) => b.total - a.total);
   const maxT = comp.length ? comp[0].total : null;
   const sugerido = state.eganador && comp.some(x => x.nombre === state.eganador) ? state.eganador : (comp[0] || {}).nombre || '';
-  if(!state.edatos.length){ $('#em-list').innerHTML = `<div class="empty">No hay colaboradores activos en ${esc(state.esuc)}.</div>`; $('#em-res').innerHTML = ''; return; }
+  if(!state.edatos.length){ $('#em-list').innerHTML = `<div class="empty">No hay embajadores, baristas ni cajeras activos en ${esc(state.esuc)}.</div>`; $('#em-res').innerHTML = ''; return; }
   $('#em-list').innerHTML = state.edatos.map((x, i) => {
     const t = puntosEval(x.cal), r = incMes(x.nombre, ym), completa = evalCompleta(x.cal);
     const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`, r.suspensiones && `${r.suspensiones} suspensión${r.suspensiones>1?'es':''}`].filter(Boolean);
