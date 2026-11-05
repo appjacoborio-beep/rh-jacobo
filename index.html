@@ -416,7 +416,7 @@ body.solo-lectura #h-editar,body.solo-lectura #back,body.solo-lectura .demo{disp
 }
 
 .vn.i-falta{background:#fde6e9;color:#c8102e} .vn.i-ret{background:#fff1d6;color:#8a5a00} .vn.i-perm{background:#e3ecfb;color:#0b3c8c}
-.vn.i-incap{background:#f3e8ff;color:#6b21a8} .vn.i-llam{background:#e6e9ef;color:#14213d} .vn.i-susp{background:#3a0d12;color:#fff}
+.vn.i-incap{background:#f3e8ff;color:#6b21a8} .vn.i-llam{background:#e6e9ef;color:#14213d} .vn.i-susp{background:#3a0d12;color:#fff} .vn.i-dtrab{background:#e6f6ec;color:#1f7a4f}
 #v-incidencias .legend .vn{display:inline-block}
 #ical .marks{flex-direction:column;flex-wrap:nowrap;gap:2px;min-width:0}
 #ical .day{min-width:0;overflow:hidden}
@@ -734,7 +734,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   .stat.bebida{background:var(--lg-soft);color:var(--lg-text)}
   .vdia,.vrow{border-color:var(--lg-line)}
   .vn.i-falta{background:rgba(255,59,48,.15);color:var(--lg-red-t)} .vn.i-ret{background:rgba(255,159,10,.18);color:var(--lg-amber-t)}
-  .vn.i-perm{background:rgba(10,122,255,.13);color:var(--lg-accent-t)} .vn.i-incap{background:rgba(175,82,222,.15);color:#8a3fb8} .vn.i-llam{background:var(--lg-soft);color:var(--lg-text)} .vn.i-susp{background:rgba(255,59,48,.85);color:#fff}
+  .vn.i-perm{background:rgba(10,122,255,.13);color:var(--lg-accent-t)} .vn.i-incap{background:rgba(175,82,222,.15);color:#8a3fb8} .vn.i-llam{background:var(--lg-soft);color:var(--lg-text)} .vn.i-susp{background:rgba(255,59,48,.85);color:#fff} .vn.i-dtrab{background:rgba(52,165,111,.17);color:var(--lg-green-t)}
 
   /* ---------- Horarios (los colores de turnos se conservan) ---------- */
   .hwrap{overflow-x:auto}
@@ -954,7 +954,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
         <div class="pills" id="ipills" style="margin-bottom:10px"></div>
         <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
         <div class="cal" id="ical"></div>
-        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span><span class="vn i-susp">⛔ Suspensión</span></div>
+        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span><span class="vn i-susp">⛔ Suspensión</span><span class="vn i-dtrab">🔄 Trabajó descanso</span></div>
         <div class="vdia" id="idia"></div>
       </div>
       <aside class="panel side">
@@ -1446,6 +1446,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <div class="legend sd-ley"><span><i class="sd-k on"></i>Suspendido</span><span><i class="sd-k vac"></i>Vacaciones</span><span><i class="sd-k desc"></i>Su descanso</span></div>
         </div>
         <div class="m-err aviso" id="i-susp-nota" hidden></div>
+        <div class="m-err aviso" id="i-dtrab-nota" hidden>🔄 Se registra cuando el colaborador trabaja en su día de descanso. Por ley se paga ese día al doble, además de su salario (LFT art. 73), salvo que se acuerde cambiarle el descanso por otro día.</div>
         <label id="i-min-wrap">Minutos de retardo<input type="number" id="i-min" min="1" max="600" step="1" inputmode="numeric" placeholder="Ej. 15"></label>
         <label id="i-sal-wrap">Hora en que salió<input type="time" id="i-sal"></label>
         <label id="i-llam-wrap">Tipo de llamado<select id="i-llam"><option>Verbal</option><option>Escrito</option></select></label>
@@ -3132,7 +3133,7 @@ function renderHorario(){
         const f = sumarDias(state.hsem, i);
         const incs = hueco ? [] : incDe(p.n, f);
         const cubre = incs.find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
-        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">⚠ ${esc(etiquetaInc(x))}</span>`).join('');
+        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${x.tipo === 'descanso_trab' ? '🔄' : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
         if(cubre){ html += `<td class="h-cel h-inc ${state.hsel.has(p.n+'|'+i)?'h-sel':''}" data-n="${esc(p.n)}" data-i="${i}" title="${esc(etiquetaInc(cubre))} · registró ${esc(cubre.registro)}">${TIPOS_INC[cubre.tipo].ic} ${esc(etiquetaInc(cubre))}${badges}</td>`; continue; }
         if(vac[i]){ html += `<td class="h-cel h-vac">Vacaciones${badges}</td>`; continue; }
         const c = celdas[i];
@@ -3181,7 +3182,7 @@ function renderMiSemana(q){
       DIAS_H.map((dia,i) => {
         const f = sumarDias(state.hsem, i), c = celdas[i];
         const incs = incDe(p.n, f), cubre = incs.find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
-        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">⚠ ${esc(etiquetaInc(x))}</span>`).join('');
+        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${x.tipo === 'descanso_trab' ? '🔄' : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
         const cls = cubre ? 'h-inc' : vac[i] ? 'h-vac' : !c ? 'h-nada' : c.t === 'turno' ? claseTurno(c.e) : ESTADOS[c.t].cls;
         const txt = cubre ? etiquetaInc(cubre) : vac[i] ? 'Vacaciones' : textoCelda(c) || 'Sin asignar';
         return `<div class="mi-row ${f===hoy?'hoy':''}"><span><b>${dia}</b> ${+f.slice(8)} ${MESES_C[+f.slice(5,7)-1]}</span><span class="h-cel ${cls}">${esc(txt)}${!cubre && c && c.n ? `<small>${esc(c.n)}</small>` : ''}${badges}</span></div>`;
@@ -3617,6 +3618,7 @@ const TIPOS_INC = {
   incapacidad:  { txt:'Incapacidad',         ic:'🏥', cls:'i-incap',  cubre:true, rango:true },
   salida:       { txt:'Salida anticipada',   ic:'🚪', cls:'i-ret' },
   llamado:      { txt:'Llamado de atención', ic:'📣', cls:'i-llam' },
+  descanso_trab:{ txt:'Trabajó su descanso', ic:'🔄', cls:'i-dtrab' },
   suspension:   { txt:'Suspensión (sanción)', ic:'⛔', cls:'i-susp', cubre:true, rango:true }
 };
 const SUSP_MAX = 8;   // LFT art. 423 fr. X: la suspensión disciplinaria no puede exceder 8 días
@@ -3627,6 +3629,7 @@ const FALTAS_LIMITE = 3;        // LFT art. 47 fr. X: más de 3 faltas en 30 dí
 function etiquetaInc(x){
   if(x.tipo === 'retardo') return `Retardo ${x.minutos} min`;
   if(x.tipo === 'salida') return `Salida ${hora12(x.horaSalida)}`;
+  if(x.tipo === 'descanso_trab') return 'Trabajó su descanso';
   if(x.tipo === 'llamado') return `Llamado ${x.detalle ? x.detalle.toLowerCase() : ''}`.trim();
   if(x.tipo === 'suspension'){ const n = x.dias && x.dias.length ? x.dias.length : diasEntre(x.fecha, x.hasta || x.fecha); return `Suspensión ${n} día${n > 1 ? 's' : ''}`; }
   return TIPOS_INC[x.tipo] ? TIPOS_INC[x.tipo].txt : x.tipo;
@@ -3697,6 +3700,7 @@ function pintarIncidencia(){
   $('#i-fecha').parentElement.hidden = esSusp;
   if(esSusp) $('#i-hasta-wrap').hidden = true;
   $('#i-sdias').hidden = !esSusp;
+  $('#i-dtrab-nota').hidden = $('#i-tipo').value !== 'descanso_trab';
   $('#i-susp-nota').hidden = !esSusp;
   if(esSusp) pintarDiasSusp();
   // Lo que ya tiene ese día
@@ -3940,7 +3944,7 @@ function renderIncInfo(){
     ${htmlAlertas(alertasDe(s.nombre))}
     <div class="mini-t">${esc(MESES[m-1])} ${y}</div>
     ${stats}
-    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención · ${cuenta(['suspension'])} suspensiones</p>
+    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención · ${cuenta(['suspension'])} suspensiones · ${cuenta(['descanso_trab'])} descansos trabajados</p>
     <div class="dethead"><b>Historial</b></div>
     <div class="det">${propias.length ? propias.map(x => filaInc(x, false)).join('') : `<div class="loading">Sin incidencias registradas.</div>`}</div>`;
   $('#iquitar').onclick = () => { state.isel = null; renderIncCal(); renderIncInfo(); };
@@ -3986,7 +3990,7 @@ function imprimirReporte(o){
   const vig = lista.filter(x => !x.canceladoPor);
   const periodo = o.desde === o.hasta ? nombreMes(o.desde) : `${nombreMes(o.desde)} a ${nombreMes(o.hasta)}`;
   const hoy = hoyISO();
-  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado','suspension'];
+  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado','suspension','descanso_trab'];
   const resumen = `<table class="rp-tab rp-res"><thead><tr>${tiposOrden.map(t => `<th>${esc(TIPOS_INC[t].txt)}</th>`).join('')}</tr></thead>
     <tbody><tr>${tiposOrden.map(t => `<td>${vig.filter(x => x.tipo === t).length}</td>`).join('')}</tr></tbody></table>`;
   const detalle = x => [
