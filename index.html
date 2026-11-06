@@ -900,7 +900,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
         <span class="ic" style="background:#e3ecfb">📅</span><h3>Actividades</h3><p>Capacitaciones, posadas, juntas y eventos, con los días festivos oficiales.</p>
       </button>
       <button class="cardbtn" id="irInc">
-        <span class="ic" style="background:#fde6e9">📋</span><h3>Incidencias</h3><p>Faltas, retardos, permisos, incapacidades y llamados de atención. Conectado con horarios.</p>
+        <span class="ic" style="background:#fde6e9">📋</span><h3>Incidencias</h3><p>Faltas, permisos, retardos, tiempo extra, descansos trabajados, sanciones y reconocimientos. Conectado con horarios.</p>
       </button>
     </div>
     <div class="pie-ini"><button class="linkbtn" id="irPw">🔑 Cambiar mi contraseña</button></div>
@@ -954,7 +954,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
         <div class="pills" id="ipills" style="margin-bottom:10px"></div>
         <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
         <div class="cal" id="ical"></div>
-        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span><span class="vn i-susp">⛔ Suspensión</span><span class="vn i-dtrab">🔄 Trabajó descanso</span></div>
+        <div class="legend"><span class="vn i-falta">❌ Falta</span><span class="vn i-ret">⏰ Retardo / salida</span><span class="vn i-perm">📝 Permiso</span><span class="vn i-incap">🏥 Incapacidad</span><span class="vn i-llam">📣 Llamado</span><span class="vn i-susp">⛔ Suspensión</span><span class="vn i-dtrab">🔄 Descanso trabajado / tiempo extra / reconocimiento</span></div>
         <div class="vdia" id="idia"></div>
       </div>
       <aside class="panel side">
@@ -1446,8 +1446,8 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <div class="legend sd-ley"><span><i class="sd-k on"></i>Suspendido</span><span><i class="sd-k vac"></i>Vacaciones</span><span><i class="sd-k desc"></i>Su descanso</span></div>
         </div>
         <div class="m-err aviso" id="i-susp-nota" hidden></div>
-        <div class="m-err aviso" id="i-dtrab-nota" hidden>🔄 Se registra cuando el colaborador trabaja en su día de descanso. Por ley se paga ese día al doble, además de su salario (LFT art. 73), salvo que se acuerde cambiarle el descanso por otro día.</div>
-        <label id="i-min-wrap">Minutos de retardo<input type="number" id="i-min" min="1" max="600" step="1" inputmode="numeric" placeholder="Ej. 15"></label>
+        <div class="m-err aviso" id="i-nota" hidden></div>
+        <label id="i-min-wrap"><span id="i-min-lbl">Minutos de retardo</span><input type="number" id="i-min" min="1" max="900" step="1" inputmode="numeric" placeholder="Ej. 15"></label>
         <label id="i-sal-wrap">Hora en que salió<input type="time" id="i-sal"></label>
         <label id="i-llam-wrap">Tipo de llamado<select id="i-llam"><option>Verbal</option><option>Escrito</option></select></label>
         <label id="i-folio-wrap">Folio de incapacidad (opcional)<input id="i-folio" maxlength="40"></label>
@@ -3133,7 +3133,7 @@ function renderHorario(){
         const f = sumarDias(state.hsem, i);
         const incs = hueco ? [] : incDe(p.n, f);
         const cubre = incs.find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
-        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${x.tipo === 'descanso_trab' ? '🔄' : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
+        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].pos ? TIPOS_INC[x.tipo].ic : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
         if(cubre){ html += `<td class="h-cel h-inc ${state.hsel.has(p.n+'|'+i)?'h-sel':''}" data-n="${esc(p.n)}" data-i="${i}" title="${esc(etiquetaInc(cubre))} · registró ${esc(cubre.registro)}">${TIPOS_INC[cubre.tipo].ic} ${esc(etiquetaInc(cubre))}${badges}</td>`; continue; }
         if(vac[i]){ html += `<td class="h-cel h-vac">Vacaciones${badges}</td>`; continue; }
         const c = celdas[i];
@@ -3182,7 +3182,7 @@ function renderMiSemana(q){
       DIAS_H.map((dia,i) => {
         const f = sumarDias(state.hsem, i), c = celdas[i];
         const incs = incDe(p.n, f), cubre = incs.find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
-        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${x.tipo === 'descanso_trab' ? '🔄' : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
+        const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].pos ? TIPOS_INC[x.tipo].ic : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
         const cls = cubre ? 'h-inc' : vac[i] ? 'h-vac' : !c ? 'h-nada' : c.t === 'turno' ? claseTurno(c.e) : ESTADOS[c.t].cls;
         const txt = cubre ? etiquetaInc(cubre) : vac[i] ? 'Vacaciones' : textoCelda(c) || 'Sin asignar';
         return `<div class="mi-row ${f===hoy?'hoy':''}"><span><b>${dia}</b> ${+f.slice(8)} ${MESES_C[+f.slice(5,7)-1]}</span><span class="h-cel ${cls}">${esc(txt)}${!cubre && c && c.n ? `<small>${esc(c.n)}</small>` : ''}${badges}</span></div>`;
@@ -3610,16 +3610,31 @@ $('#ce-inc').onclick = () => {
 $('#h-plantilla').onclick = abrirPlantilla;
 
 /* =================== INCIDENCIAS =================== */
+// g = grupo en el menú · pos = registro positivo o informativo (se imprime como constancia, no como acta)
 const TIPOS_INC = {
-  falta:        { txt:'Falta',               ic:'❌', cls:'i-falta',  cubre:true },
-  retardo:      { txt:'Retardo',             ic:'⏰', cls:'i-ret' },
-  permiso_goce: { txt:'Permiso con goce',    ic:'📝', cls:'i-perm',   cubre:true, rango:true },
-  permiso_sin:  { txt:'Permiso sin goce',    ic:'📝', cls:'i-perm',   cubre:true, rango:true },
-  incapacidad:  { txt:'Incapacidad',         ic:'🏥', cls:'i-incap',  cubre:true, rango:true },
-  salida:       { txt:'Salida anticipada',   ic:'🚪', cls:'i-ret' },
-  llamado:      { txt:'Llamado de atención', ic:'📣', cls:'i-llam' },
-  descanso_trab:{ txt:'Trabajó su descanso', ic:'🔄', cls:'i-dtrab' },
-  suspension:   { txt:'Suspensión (sanción)', ic:'⛔', cls:'i-susp', cubre:true, rango:true }
+  falta:        { txt:'Falta',               ic:'❌', cls:'i-falta',  g:'Ausencias', cubre:true },
+  falta_just:   { txt:'Falta justificada',   ic:'☑️', cls:'i-perm',   g:'Ausencias', cubre:true },
+  permiso_goce: { txt:'Permiso con goce',    ic:'📝', cls:'i-perm',   g:'Ausencias', cubre:true, rango:true },
+  permiso_sin:  { txt:'Permiso sin goce',    ic:'📝', cls:'i-perm',   g:'Ausencias', cubre:true, rango:true },
+  incapacidad:  { txt:'Incapacidad',         ic:'🏥', cls:'i-incap',  g:'Ausencias', cubre:true, rango:true },
+  retardo:      { txt:'Retardo',             ic:'⏰', cls:'i-ret',    g:'Puntualidad' },
+  salida:       { txt:'Salida anticipada',   ic:'🚪', cls:'i-ret',    g:'Puntualidad' },
+  tiempo_extra: { txt:'Tiempo extra',        ic:'⏱️', cls:'i-dtrab',  g:'Tiempo y descansos', pos:true },
+  descanso_trab:{ txt:'Trabajó su descanso', ic:'🔄', cls:'i-dtrab',  g:'Tiempo y descansos', pos:true },
+  festivo_trab: { txt:'Trabajó día festivo', ic:'🎌', cls:'i-dtrab',  g:'Tiempo y descansos', pos:true },
+  llamado:      { txt:'Llamado de atención', ic:'📣', cls:'i-llam',   g:'Disciplina' },
+  suspension:   { txt:'Suspensión (sanción)', ic:'⛔', cls:'i-susp',  g:'Disciplina', cubre:true, rango:true },
+  accidente:    { txt:'Accidente de trabajo', ic:'🩹', cls:'i-incap', g:'Otros' },
+  reconocimiento:{ txt:'Reconocimiento',     ic:'⭐', cls:'i-dtrab',  g:'Otros', pos:true }
+};
+// Nota que aparece al elegir cada tipo
+const NOTAS_INC = {
+  falta_just: '☑️ Falta con causa justificada (comprobante, aviso previo, etc.). No cuenta para el límite de faltas del art. 47 fr. X de la LFT. Anotar el motivo en la descripción.',
+  tiempo_extra: '⏱️ Las primeras 9 horas extra de la semana se pagan al doble; las que pasen de 9 se pagan al triple (LFT arts. 66 a 68).',
+  descanso_trab: '🔄 Se registra cuando el colaborador trabaja en su día de descanso. Por ley se paga ese día al doble, además de su salario (LFT art. 73), salvo que se acuerde cambiarle el descanso por otro día.',
+  festivo_trab: '🎌 Trabajar un día de descanso obligatorio se paga al doble, además de su salario (LFT art. 75).',
+  accidente: '🩹 Describir qué pasó, dónde y si hubo atención médica. El accidente de trabajo se reporta al IMSS con el formato ST-7; si hay días de incapacidad, registrarlos aparte como Incapacidad.',
+  reconocimiento: '⭐ Para dejar constancia de una felicitación o buen desempeño. Se integra a su expediente.'
 };
 const SUSP_MAX = 8;   // LFT art. 423 fr. X: la suspensión disciplinaria no puede exceder 8 días
 const diasEntre = (a, b) => Math.round((dUTC(b) - dUTC(a)) / 864e5) + 1;
@@ -3629,7 +3644,7 @@ const FALTAS_LIMITE = 3;        // LFT art. 47 fr. X: más de 3 faltas en 30 dí
 function etiquetaInc(x){
   if(x.tipo === 'retardo') return `Retardo ${x.minutos} min`;
   if(x.tipo === 'salida') return `Salida ${hora12(x.horaSalida)}`;
-  if(x.tipo === 'descanso_trab') return 'Trabajó su descanso';
+  if(x.tipo === 'tiempo_extra'){ const h = Math.round((x.minutos || 0) / 6) / 10; return `Tiempo extra ${h} h`; }
   if(x.tipo === 'llamado') return `Llamado ${x.detalle ? x.detalle.toLowerCase() : ''}`.trim();
   if(x.tipo === 'suspension'){ const n = x.dias && x.dias.length ? x.dias.length : diasEntre(x.fecha, x.hasta || x.fecha); return `Suspensión ${n} día${n > 1 ? 's' : ''}`; }
   return TIPOS_INC[x.tipo] ? TIPOS_INC[x.tipo].txt : x.tipo;
@@ -3673,7 +3688,8 @@ function abrirIncidencia(nombre, fecha, sucursal){
   $('#m-sub').innerHTML = '';
   $('#i-n').value = '';
   $('#i-fecha').value = fecha || hoyISO();
-  $('#i-tipo').innerHTML = Object.entries(TIPOS_INC).map(([k,t]) => `<option value="${k}">${t.ic} ${esc(t.txt)}</option>`).join('');
+  const grupos = [...new Set(Object.values(TIPOS_INC).map(t => t.g))];
+  $('#i-tipo').innerHTML = grupos.map(g => `<optgroup label="${esc(g)}">${Object.entries(TIPOS_INC).filter(([, t]) => t.g === g).map(([k,t]) => `<option value="${k}">${t.ic} ${esc(t.txt)}</option>`).join('')}</optgroup>`).join('');
   $('#i-tipo').value = 'falta';
   state.iSDias = new Set(); state.iSMes = null;
   $('#i-hasta').value = ''; $('#i-min').value = ''; $('#i-sal').value = ''; $('#i-llam').value = 'Verbal'; $('#i-folio').value = ''; $('#i-desc').value = '';
@@ -3691,16 +3707,19 @@ function pintarIncidencia(){
     $('#i-cambiar').onclick = () => { state.iSel = null; pintarIncidencia(); $('#i-n').focus(); };
   } else buscarIncColab();
   $('#i-hasta-wrap').hidden = !t.rango;
-  $('#i-min-wrap').hidden = $('#i-tipo').value !== 'retardo';
+  $('#i-min-wrap').hidden = !['retardo', 'tiempo_extra'].includes($('#i-tipo').value);
+  $('#i-min-lbl').textContent = $('#i-tipo').value === 'tiempo_extra' ? 'Minutos de tiempo extra (ej. 90 = 1½ h)' : 'Minutos de retardo';
   $('#i-sal-wrap').hidden = $('#i-tipo').value !== 'salida';
   $('#i-llam-wrap').hidden = $('#i-tipo').value !== 'llamado';
   $('#i-folio-wrap').hidden = $('#i-tipo').value !== 'incapacidad';
   const esSusp = $('#i-tipo').value === 'suspension';
-  $('#i-desc-lbl').firstChild.textContent = $('#i-tipo').value === 'llamado' ? 'Descripción de lo sucedido' : esSusp ? 'Motivo de la sanción' : 'Descripción (opcional)';
+  const tipoSel = $('#i-tipo').value;
+  $('#i-desc-lbl').firstChild.textContent = tipoSel === 'llamado' || tipoSel === 'accidente' ? 'Descripción de lo sucedido' : esSusp ? 'Motivo de la sanción' : tipoSel === 'reconocimiento' ? 'Motivo del reconocimiento' : 'Descripción (opcional)';
   $('#i-fecha').parentElement.hidden = esSusp;
   if(esSusp) $('#i-hasta-wrap').hidden = true;
   $('#i-sdias').hidden = !esSusp;
-  $('#i-dtrab-nota').hidden = $('#i-tipo').value !== 'descanso_trab';
+  const nota = NOTAS_INC[$('#i-tipo').value];
+  $('#i-nota').hidden = !nota; $('#i-nota').textContent = nota || '';
   $('#i-susp-nota').hidden = !esSusp;
   if(esSusp) pintarDiasSusp();
   // Lo que ya tiene ese día
@@ -3776,7 +3795,8 @@ function datosInc(){
     if($('#i-hasta').value < fecha) return { error:'La fecha "hasta" no puede ser antes del inicio.' };
     d.hasta = $('#i-hasta').value;
   }
-  if(tipo === 'retardo'){ d.minutos = Math.floor(+$('#i-min').value); if(!(d.minutos > 0)) return { error:'Capturar los minutos de retardo.' }; }
+  if(tipo === 'retardo' || tipo === 'tiempo_extra'){ d.minutos = Math.floor(+$('#i-min').value); if(!(d.minutos > 0)) return { error: tipo === 'retardo' ? 'Capturar los minutos de retardo.' : 'Capturar los minutos de tiempo extra.' }; }
+  if((tipo === 'accidente' || tipo === 'reconocimiento') && !d.descripcion) return { error: tipo === 'accidente' ? 'Describir el accidente.' : 'Describir el motivo del reconocimiento.' };
   if(tipo === 'salida'){ d.horaSalida = $('#i-sal').value; if(!d.horaSalida) return { error:'Capturar la hora de salida.' }; }
   if(tipo === 'llamado'){ d.detalle = $('#i-llam').value; if(!d.descripcion) return { error:'Describir el motivo del llamado de atención.' }; }
   if(tipo === 'incapacidad' && $('#i-folio').value.trim()) d.detalle = 'Folio ' + $('#i-folio').value.trim();
@@ -3884,7 +3904,7 @@ function filaInc(x, conNombre){
       ${x.descripcion ? `<small class="i-desc">${esc(x.descripcion)}</small>` : ''}
       <small class="autz">✔ Registró ${esc(x.registro || '—')} · ${esc(fechaCorta(x.fechaReg || x.fecha))} · ${esc(x.horaReg)}</small>
       ${x.canceladoPor ? `<small class="canc">✖ Canceló ${esc(x.canceladoPor)} · ${esc(fechaCorta(x.fechaCancel))} · ${esc(x.horaCancel)}</small>` : ''}</span>
-    ${x.canceladoPor ? '' : `<span class="i-acc"><button class="link" data-ip="${esc(x.id)}" title="Imprimir formato">🖨️ ${x.tipo === 'llamado' ? 'Llamado' : x.tipo === 'suspension' ? 'Acta de sanción' : 'Acta'}</button><button class="del" data-iid="${esc(x.id)}">Cancelar</button></span>`}
+    ${x.canceladoPor ? '' : `<span class="i-acc"><button class="link" data-ip="${esc(x.id)}" title="Imprimir formato">🖨️ ${x.tipo === 'llamado' ? 'Llamado' : x.tipo === 'suspension' ? 'Acta de sanción' : TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].pos ? 'Constancia' : 'Acta'}</button><button class="del" data-iid="${esc(x.id)}">Cancelar</button></span>`}
   </div>`;
 }
 document.addEventListener('click', e => {
@@ -3944,7 +3964,7 @@ function renderIncInfo(){
     ${htmlAlertas(alertasDe(s.nombre))}
     <div class="mini-t">${esc(MESES[m-1])} ${y}</div>
     ${stats}
-    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención · ${cuenta(['suspension'])} suspensiones · ${cuenta(['descanso_trab'])} descansos trabajados</p>
+    <p class="nota-peq">En ${anio}: ${cuenta(['falta'])} faltas · ${cuenta(['retardo'])} retardos · ${cuenta(['permiso_goce','permiso_sin'])} permisos · ${cuenta(['incapacidad'])} incapacidades · ${cuenta(['salida'])} salidas anticipadas · ${cuenta(['llamado'])} llamados de atención · ${cuenta(['suspension'])} suspensiones · ${cuenta(['falta_just'])} faltas justificadas · ${cuenta(['tiempo_extra'])} registros de tiempo extra · ${cuenta(['descanso_trab','festivo_trab'])} descansos o festivos trabajados · ${cuenta(['accidente'])} accidentes · ${cuenta(['reconocimiento'])} reconocimientos</p>
     <div class="dethead"><b>Historial</b></div>
     <div class="det">${propias.length ? propias.map(x => filaInc(x, false)).join('') : `<div class="loading">Sin incidencias registradas.</div>`}</div>`;
   $('#iquitar').onclick = () => { state.isel = null; renderIncCal(); renderIncInfo(); };
@@ -3990,7 +4010,7 @@ function imprimirReporte(o){
   const vig = lista.filter(x => !x.canceladoPor);
   const periodo = o.desde === o.hasta ? nombreMes(o.desde) : `${nombreMes(o.desde)} a ${nombreMes(o.hasta)}`;
   const hoy = hoyISO();
-  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado','suspension','descanso_trab'];
+  const tiposOrden = ['falta','retardo','permiso_goce','permiso_sin','incapacidad','salida','llamado','suspension','falta_just','tiempo_extra','descanso_trab','festivo_trab','accidente','reconocimiento'];
   const resumen = `<table class="rp-tab rp-res"><thead><tr>${tiposOrden.map(t => `<th>${esc(TIPOS_INC[t].txt)}</th>`).join('')}</tr></thead>
     <tbody><tr>${tiposOrden.map(t => `<td>${vig.filter(x => x.tipo === t).length}</td>`).join('')}</tr></tbody></table>`;
   const detalle = x => [
@@ -4281,7 +4301,7 @@ async function cargarEmpleado(){
 function incMes(nombre, ym){
   const l = incVigentes().filter(x => x.colaborador === nombre && x.fecha.slice(0,7) === ym);
   const n = t => l.filter(x => x.tipo === t).length;
-  return { faltas:n('falta'), retardos:n('retardo'), llamados:n('llamado'), suspensiones:n('suspension') };
+  return { faltas:n('falta'), retardos:n('retardo'), llamados:n('llamado'), suspensiones:n('suspension'), reconocimientos:n('reconocimiento') };
 }
 function renderEmpleado(){
   const ym = state.emes;
@@ -4296,7 +4316,7 @@ function renderEmpleado(){
   if(!state.edatos.length){ $('#em-list').innerHTML = `<div class="empty">No hay embajadores, baristas ni cajeras activos en ${esc(state.esuc)}.</div>`; $('#em-res').innerHTML = ''; return; }
   $('#em-list').innerHTML = state.edatos.map((x, i) => {
     const t = puntosEval(x.cal), r = incMes(x.nombre, ym), completa = evalCompleta(x.cal);
-    const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`, r.suspensiones && `${r.suspensiones} suspensión${r.suspensiones>1?'es':''}`].filter(Boolean);
+    const ref = [r.faltas && `${r.faltas} falta${r.faltas>1?'s':''}`, r.retardos && `${r.retardos} retardo${r.retardos>1?'s':''}`, r.llamados && `${r.llamados} llamado${r.llamados>1?'s':''} de atención`, r.suspensiones && `${r.suspensiones} suspensión${r.suspensiones>1?'es':''}`, r.reconocimientos && `⭐ ${r.reconocimientos} reconocimiento${r.reconocimientos>1?'s':''}`].filter(Boolean);
     return `<div class="em-card ${completa && x.nombre === sugerido ? 'gana' : ''}" data-i="${i}">
       <div class="em-head"><div><b>${completa && x.nombre === sugerido ? '🏆 ' : ''}${esc(x.nombre)}</b><small>${esc(x.puesto || '')}</small></div>
         <span class="em-tot">${t}<small>${completa ? 'de 100' : 'incompleta'}</small></span></div>
@@ -4663,8 +4683,9 @@ function imprimirConstancia(){
 // Llamado de atención / acta de incidencia, prellenado desde la incidencia
 function imprimirFormatoInc(x){
   const c = state.colabsTodos.find(y => y.nombre === x.colaborador) || { nombre:x.colaborador, puesto:'', sucursal:x.sucursal };
-  const esLlamado = x.tipo === 'llamado', esSusp = x.tipo === 'suspension';
-  const titulo = esLlamado ? `Llamado de atención ${x.detalle ? '(' + x.detalle.toLowerCase() + ')' : ''}` : esSusp ? 'Acta de sanción: suspensión sin goce de sueldo' : 'Acta administrativa de incidencia';
+  const esLlamado = x.tipo === 'llamado', esSusp = x.tipo === 'suspension', esPos = !!(TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].pos);
+  const titulo = esLlamado ? `Llamado de atención ${x.detalle ? '(' + x.detalle.toLowerCase() + ')' : ''}` : esSusp ? 'Acta de sanción: suspensión sin goce de sueldo'
+    : x.tipo === 'reconocimiento' ? 'Constancia de reconocimiento' : esPos ? `Constancia: ${TIPOS_INC[x.tipo].txt.toLowerCase()}` : x.tipo === 'accidente' ? 'Acta de accidente de trabajo' : 'Acta administrativa de incidencia';
   const nSusp = esSusp ? diasDe(x).length : 0;
   const listaSusp = esSusp ? diasDe(x).map(f => fechaDoc(f)).join(', ') : '';
   const desde = sumarDias(x.fecha, -89);
@@ -4681,16 +4702,22 @@ function imprimirFormatoInc(x){
       <tr><th>Fecha de regreso</th><td colspan="3">${esc(fechaDoc(sumarDias(x.hasta || x.fecha, 1)))}</td></tr></table>` : ''}
     <h3 class="rp-sec">${esSusp ? 'Motivo de la sanción' : 'Descripción de los hechos'}</h3>
     <div class="rp-caja">${x.descripcion ? esc(x.descripcion) : lineas(3)}</div>
-    <h3 class="rp-sec">Incidencias registradas en los 90 días anteriores</h3>
+    ${esPos ? '' : `<h3 class="rp-sec">Incidencias registradas en los 90 días anteriores</h3>
     ${previas.length ? `<table class="rp-tab"><thead><tr><th style="width:22%">Fecha</th><th style="width:28%">Incidencia</th><th>Descripción</th></tr></thead><tbody>${previas.map(y => `<tr><td>${esc(fechaMedia(y.fecha))} ${y.fecha.slice(0,4)}</td><td>${esc(etiquetaInc(y))}</td><td>${esc(y.descripcion || '—')}</td></tr>`).join('')}</tbody></table>` : '<p class="rp-nada">Sin incidencias previas en ese periodo.</p>'}
     <h3 class="rp-sec">Manifestación del colaborador(a)</h3>
     <div class="rp-caja">${lineas(3)}</div>
     <h3 class="rp-sec">Acuerdos y compromisos</h3>
-    <div class="rp-caja">${lineas(3)}</div>
+    <div class="rp-caja">${lineas(3)}</div>`}
     <p class="rp-texto">${esSusp
       ? `Con fundamento en el Reglamento Interior de Trabajo de la empresa y en el artículo 423, fracción X, de la Ley Federal del Trabajo, y habiendo sido escuchado(a) el colaborador(a) previamente, se le aplica una suspensión en sus labores sin goce de sueldo por ${nSusp} día${nSusp > 1 ? 's' : ''} (${listaSusp}), debiendo presentarse a laborar el ${fechaDoc(sumarDias(x.hasta || x.fecha, 1))} en su horario habitual. En caso de reincidencia se aplicarán las medidas que correspondan conforme a dicho reglamento y a la ley.`
       : esLlamado
       ? 'Por medio del presente se hace un llamado de atención al colaborador(a) por los hechos descritos, exhortándole a apegarse a las políticas y al Reglamento Interior de Trabajo de la empresa. En caso de reincidencia, se aplicarán las medidas disciplinarias que correspondan conforme a dicho reglamento y a la Ley Federal del Trabajo.'
+      : x.tipo === 'reconocimiento'
+      ? 'La empresa reconoce y agradece al colaborador(a) su desempeño y compromiso por lo aquí descrito. La presente se integra a su expediente laboral.'
+      : esPos
+      ? 'Se extiende la presente para dejar constancia de lo aquí registrado, para los efectos laborales y de nómina que correspondan. La presente se integra a su expediente laboral.'
+      : x.tipo === 'accidente'
+      ? 'Se levanta la presente acta para dejar constancia del accidente de trabajo descrito. El aviso al IMSS se realiza con el formato ST-7. La presente se integra a su expediente laboral.'
       : 'Se levanta la presente acta para dejar constancia de la incidencia descrita. El colaborador(a) tiene derecho a manifestar lo que a su interés convenga. La presente se integra a su expediente laboral.'}</p>
     <p class="rp-leyenda">La firma del colaborador(a) hace constar que recibió y conoce el contenido de este documento, no necesariamente su conformidad con el mismo.</p>
     ${firmasDoc([[c.nombre, 'Colaborador(a)'], [x.registro || 'Nombre y firma', 'Quien aplica']])}
