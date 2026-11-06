@@ -424,6 +424,10 @@ body.solo-lectura #h-editar,body.solo-lectura #back,body.solo-lectura .demo{disp
 .i-alerta{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:8px;font-size:14px}
 .i-alerta .m-err{margin:6px 0 0;font-size:13px}
 .row .t small.i-desc{color:var(--ink);font-style:italic}
+.h-fuera{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.22) 0 6px,transparent 6px 12px)}
+.h-sucb{display:block;margin:2px auto 0;background:#fff;color:#0b3c8c;border-radius:4px;font-size:9.5px;padding:1px 5px;font-weight:800;width:fit-content}
+.hchip.h-leyfuera{background:#fff;color:#0b3c8c;border:1px dashed #0b3c8c}
+.h-apoyo .h-nom small{color:#0b3c8c}
 .h-incb{display:block;margin:2px auto 0;background:#e31b1b;color:#fff;border-radius:4px;font-size:9.5px;padding:1px 4px;font-weight:800;width:fit-content}
 body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]{cursor:pointer}
 body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2px solid #e31b1b;outline-offset:-2px}
@@ -988,11 +992,11 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     </div>
     <div class="search no-print"><input id="h-q" type="search" placeholder="Buscar mi horario por nombre…" autocomplete="off"></div>
     <div class="h-edit-bar no-print" id="h-edit-bar" hidden>
-      <div class="mini-t">Seleccionar celdas y luego elegir el turno: <b>arrastrar</b> con el mouse para un rango, tocar el <b>nombre</b> para toda su semana, tocar el <b>día</b> para toda la columna, o tocar celdas sueltas. Doble clic en una celda para nota u otro horario. Faltas, retardos y permisos: botón <b>⚠️ Incidencia</b>.</div>
+      <div class="mini-t">Seleccionar celdas y luego elegir el turno: <b>arrastrar</b> con el mouse para un rango, tocar el <b>nombre</b> para toda su semana, tocar el <b>día</b> para toda la columna, o tocar celdas sueltas. Para nota, otro horario o <b>📍 cubrir en otra sucursal</b>: tocar la celda y luego <b>✏️ Otro horario, nota o sucursal</b>. Faltas, retardos y permisos: botón <b>⚠️ Incidencia</b>.</div>
       <div class="hchips" id="h-pincel"></div>
       <div class="h-selbar" id="h-selbar" hidden>
         <span id="h-selcount"></span>
-        <button class="btn ghost" id="h-seledit">✏️ Otro horario o nota</button>
+        <button class="btn ghost" id="h-seledit">✏️ Otro horario, nota o sucursal</button>
         <button class="btn ghost" id="h-selinc">⚠️ Incidencia</button>
         <button class="btn ghost" id="h-selclear">Quitar selección</button>
       </div>
@@ -1011,7 +1015,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div class="hwrap"><table class="htab" id="h-tab"></table></div>
     <div class="mis" id="h-mis"></div>
     <p class="nota-peq" id="h-act"></p>
-    <div class="hleyenda"><span class="hchip h-man">Mañana</span><span class="hchip h-med">Intermedio</span><span class="hchip h-tar">Tarde</span><span class="hchip h-desc">Descanso</span><span class="hchip h-vac">Vacaciones</span><span class="hchip h-inc">Incidencia</span></div>
+    <div class="hleyenda"><span class="hchip h-man">Mañana</span><span class="hchip h-med">Intermedio</span><span class="hchip h-tar">Tarde</span><span class="hchip h-desc">Descanso</span><span class="hchip h-vac">Vacaciones</span><span class="hchip h-inc">Incidencia</span><span class="hchip h-leyfuera">📍 Cubre en otra sucursal</span></div>
   </section>
 
   <!-- COLABORADORES -->
@@ -1170,6 +1174,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
       <label>Salida<input type="time" id="ce-s"></label>
     </div>
     <label>Nota (opcional)<input id="ce-n" placeholder="Ej. CAJA, Tueste de café" maxlength="40"></label>
+    <label>¿Dónde trabaja ese día?<select id="ce-suc"></select></label>
     <div class="actions">
       <button class="btn ghost" id="ce-inc">⚠️ Incidencia</button>
       <button class="btn ghost" id="ce-borrar">Vaciar</button>
@@ -3060,6 +3065,15 @@ function areaDe(puesto){
 function lunesDe(f){ const d = diaSem(f); return sumarDias(f, d === 0 ? -6 : 1 - d); }
 function hora12(h){ const [H,M] = h.split(':').map(Number); const ap = H < 12 ? 'AM' : 'PM'; const h12 = H % 12 || 12; return `${h12}${M ? ':' + pad(M) : ''} ${ap}`; }
 function claseTurno(e){ const H = +e.slice(0,2); return H < 10 ? 'h-man' : H < 12 ? 'h-med' : 'h-tar'; }
+// Quién de otras sucursales cubre turnos en "suc" esta semana: [{ n, de, dias:[celda|null ×7] }]
+function apoyosSemana(regs, suc){
+  const out = [];
+  regs.filter(r => r.sucursal !== suc && r.datos).forEach(r => (r.datos.personas || []).forEach(p => {
+    const dias = [0,1,2,3,4,5,6].map(i => { const c = (r.datos.c[p.n] || [])[i]; return c && c.t === 'turno' && c.suc === suc ? c : null; });
+    if(dias.some(Boolean)) out.push({ n:p.n, de:r.sucursal, dias });
+  }));
+  return out.sort((a,b) => a.n.localeCompare(b.n, 'es'));
+}
 function textoCelda(c){
   if(!c) return '';
   if(c.t === 'turno') return `${hora12(c.e)} – ${hora12(c.s)}`;
@@ -3102,7 +3116,8 @@ async function cargarHorario(){
   try{
     const lista = await api.horario(state.hsem);
     state.hreg = lista.find(h => h.sucursal === state.hsuc) || null;
-  }catch(e){ toast('No se pudo cargar el horario: ' + e.message, true); state.hreg = null; }
+    state.hotras = lista.filter(h => h.sucursal !== state.hsuc);
+  }catch(e){ toast('No se pudo cargar el horario: ' + e.message, true); state.hreg = null; state.hotras = []; }
   state.hdatos = state.hreg ? JSON.parse(JSON.stringify(state.hreg.datos)) : null;
   renderHorario();
 }
@@ -3163,7 +3178,8 @@ function renderHorario(){
         if(c && c.t === 'descanso') descansos++;
         if(!c) vacios++;
         const cls = !c ? 'h-nada' : c.t === 'turno' ? claseTurno(c.e) : ESTADOS[c.t].cls;
-        html += `<td class="h-cel ${cls} ${f===hoy?'h-hoycol':''} ${state.hsel.has(p.n+'|'+i)?'h-sel':''}" data-n="${esc(p.n)}" data-i="${i}">${esc(textoCelda(c)) || `<span class="plus">${ed ? '+' : '—'}</span>`}${c && c.n ? `<small>${esc(c.n)}</small>` : ''}${badges}</td>`;
+        const fuera = c && c.suc && c.suc !== state.hsuc;
+        html += `<td class="h-cel ${cls} ${fuera ? 'h-fuera' : ''} ${f===hoy?'h-hoycol':''} ${state.hsel.has(p.n+'|'+i)?'h-sel':''}" data-n="${esc(p.n)}" data-i="${i}">${esc(textoCelda(c)) || `<span class="plus">${ed ? '+' : '—'}</span>`}${c && c.n ? `<small>${esc(c.n)}</small>` : ''}${fuera ? `<span class="h-sucb">📍 En ${esc(c.suc)}</span>` : ''}${badges}</td>`;
       }
       html += `</tr>`;
       const todaVac = vac.every(Boolean);
@@ -3171,6 +3187,16 @@ function renderHorario(){
       if(vacios) conVacios++;
     });
   });
+  // Apoyo de otras sucursales: quien tiene marcado "cubre en esta sucursal" en el horario de su sucursal
+  const apoyos = apoyosSemana(state.hotras || [], state.hsuc).filter(a => !d.personas.some(p => p.n === a.n) && (!q || norm(a.n).includes(q)));
+  if(apoyos.length){
+    html += `<tr class="h-area"><td colspan="8">📍 Apoyo de otras sucursales</td></tr>`;
+    apoyos.forEach(a => {
+      const colab = state.colabsTodos.find(c => c.nombre === a.n);
+      html += `<tr class="h-apoyo"><td class="h-nom"><b>${esc(nombreCorto(a.n))}</b><small>${esc(colab ? colab.puesto : '')} · viene de ${esc(a.de)}</small></td>` +
+        a.dias.map((c, i) => c ? `<td class="h-cel ${claseTurno(c.e)} h-fuera ${sumarDias(state.hsem, i)===hoy?'h-hoycol':''}">${esc(textoCelda(c))}${c.n ? `<small>${esc(c.n)}</small>` : ''}<span class="h-sucb">📍 De ${esc(a.de)}</span></td>` : `<td class="h-cel h-nada"><span class="plus">—</span></td>`).join('') + `</tr>`;
+    });
+  }
   $('#h-hint').textContent = !ed && !vacia && !document.body.classList.contains('solo-lectura') ? '💡 Tocar la celda de un día para registrar una incidencia (falta, retardo, permiso…). Se guarda también en Incidencias.' : '';
   if(ed || (vacia && !document.body.classList.contains('solo-lectura'))){
     const filas = d.personas.length ? 1 : 5;
@@ -3207,7 +3233,7 @@ function renderMiSemana(q){
         const incs = incDe(p.n, f), cubre = incs.find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
         const badges = incs.filter(x => x !== cubre).map(x => `<span class="h-incb">${TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].pos ? TIPOS_INC[x.tipo].ic : '⚠'} ${esc(etiquetaInc(x))}</span>`).join('');
         const cls = cubre ? 'h-inc' : vac[i] ? 'h-vac' : !c ? 'h-nada' : c.t === 'turno' ? claseTurno(c.e) : ESTADOS[c.t].cls;
-        const txt = cubre ? etiquetaInc(cubre) : vac[i] ? 'Vacaciones' : textoCelda(c) || 'Sin asignar';
+        const txt = (cubre ? etiquetaInc(cubre) : vac[i] ? 'Vacaciones' : textoCelda(c) || 'Sin asignar') + (!cubre && !vac[i] && c && c.suc && c.suc !== state.hsuc ? ` · 📍 en ${c.suc}` : '');
         return `<div class="mi-row ${f===hoy?'hoy':''}"><span><b>${dia}</b> ${+f.slice(8)} ${MESES_C[+f.slice(5,7)-1]}</span><span class="h-cel ${cls}">${esc(txt)}${!cubre && c && c.n ? `<small>${esc(c.n)}</small>` : ''}${badges}</span></div>`;
       }).join('') + `</div>`;
   }).join('');
@@ -3395,6 +3421,8 @@ function editarSeleccion(){
   $('#ce-e').value = c && c.t === 'turno' ? c.e : '';
   $('#ce-s').value = c && c.t === 'turno' ? c.s : '';
   $('#ce-n').value = c && c.n ? c.n : '';
+  $('#ce-suc').innerHTML = `<option value="">En ${esc(state.hsuc)} (esta sucursal)</option>` + SUCURSALES.filter(x => x !== state.hsuc).map(x => `<option value="${x}">📍 Cubre en ${x}</option>`).join('');
+  $('#ce-suc').value = c && c.suc ? c.suc : '';
   $('#cel-modal').hidden = false;
 }
 $('#ce-ops').addEventListener('click', e => {
@@ -3421,7 +3449,9 @@ $('#ce-ok').onclick = () => {
     if(on){ const o = state.hceops[+on.dataset.k]; c = o.t === 'turno' ? { t:'turno', e:o.e, s:o.s } : { t:o.t }; }
   }
   if(!c) return toast('Elegir un turno o capturar entrada y salida', true);
-  state.hcel.forEach(([n,i]) => { const x = { ...c }; if(nota) x.n = nota; ponerCelda(n, i, x); if(!nota && x.n && state.hcel.length === 1) delete x.n; });
+  const suc = $('#ce-suc').value;
+  if(suc && c.t !== 'turno') return toast('Para marcar otra sucursal, elegir un turno con horario', true);
+  state.hcel.forEach(([n,i]) => { const x = { ...c }; if(nota) x.n = nota; if(suc) x.suc = suc; ponerCelda(n, i, x); if(!nota && x.n && state.hcel.length === 1) delete x.n; });
   state.hsel = new Set();
   cerrarCelda(); renderHorario();
 };
@@ -4465,16 +4495,18 @@ function renderHoy(){
   const idx = difDias(state.hoyHor.sem, f);
   const turnos = sucs.map(s => {
     const reg = state.hoyHor.lista.find(h => h.sucursal === s);
-    if(!reg) return { s, sin:true };
+    if(!reg && !apoyosSemana(state.hoyHor.lista, s).some(a => a.dias[idx])) return { s, sin:true };
     const g = { 'h-man':[], 'h-med':[], 'h-tar':[], desc:[], aus:[] };
-    reg.datos.personas.filter(p => !esHueco(p.n)).forEach(p => {
+    (reg ? reg.datos.personas : []).filter(p => !esHueco(p.n)).forEach(p => {
       const c = (reg.datos.c[p.n] || [])[idx];
       const vac = vacVigentes().some(v => v.colaborador === p.n && v.fechas.includes(f));
       const inc = incDe(p.n, f).find(x => TIPOS_INC[x.tipo] && TIPOS_INC[x.tipo].cubre);
       if(vac || inc) g.aus.push({ n:p.n, t: vac ? 'Vacaciones' : etiquetaInc(inc) });
+      else if(c && c.t === 'turno' && c.suc && c.suc !== s) return;   // ese día cubre en otra sucursal
       else if(c && c.t === 'turno') g[claseTurno(c.e)].push({ n:p.n, t:`${hora12(c.e)}–${hora12(c.s)}` });
       else if(c && c.t === 'descanso') g.desc.push({ n:p.n });
     });
+    apoyosSemana(state.hoyHor.lista, s).forEach(a => { const c = a.dias[idx]; if(c) g[claseTurno(c.e)].push({ n:a.n, t:`${hora12(c.e)}–${hora12(c.s)} · de ${a.de}` }); });
     return { s, g };
   });
   // Aniversarios próximos 7 días
