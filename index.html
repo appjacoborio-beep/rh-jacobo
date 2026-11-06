@@ -1815,12 +1815,20 @@ const demo = {
     const autorizo = this.verificar(d.encargado, d.contrasena);
     const hoy = hoyISO(), anios = aniosCumplidos(d.ingreso, hoy);
     if(anios < 1) throw new Error(d.colaborador + ' aún no cumple su primer año de servicio.');
-    const todas = lsGet('rh_demo_vac', []), propias = todas.filter(v => !v.canceladoPor && v.colaborador === d.colaborador);
+    const todas = lsGet('rh_demo_vac', []), orig = d.editarId ? todas.find(v => v.id === d.editarId) : null;
+    const propias = todas.filter(v => !v.canceladoPor && v.colaborador === d.colaborador && v !== orig);
     const fechasD = d.fechas || [];
     const empalme = fechasD.find(f => propias.some(v => v.fechas.includes(f)));
     if(empalme) throw new Error(d.colaborador + ' ya tiene vacaciones el ' + empalme + '.');
-    const disp = diasLFT(anios) - propias.filter(v => v.periodo === anios).reduce((s,v) => s + v.dias, 0);
-    if((d.previas || fechasD.length) > disp) throw new Error('Solo le quedan ' + disp + ' días de su año ' + anios + '.');
+    const per = orig ? orig.periodo : anios;
+    const disp = diasLFT(per) - propias.filter(v => v.periodo === per).reduce((s,v) => s + v.dias, 0);
+    if((d.previas || fechasD.length) > disp) throw new Error('Solo le quedan ' + disp + ' días de su año ' + per + '.');
+    if(orig){
+      const f = fechasD.slice().sort();
+      Object.assign(orig, { inicio:f[0], fin:f[f.length-1], regreso:d.regreso, dias:f.length, fechas:f,
+        edicion:`Editó ${autorizo} · ${hoy} ${horaAhora()} (antes: ${orig.inicio} a ${orig.fin}, ${orig.dias} días)` });
+      lsSet('rh_demo_vac', todas); return orig;
+    }
     const extra = lsGet('rh_demo_col', {}); extra[d.colaborador] = { ingreso:d.ingreso, descanso:d.descanso }; lsSet('rh_demo_col', extra);
     if(d.previas){
       const vp = { id: Math.random().toString(36).slice(2,12), colaborador:d.colaborador, sucursal:d.sucursal, periodo:anios,
@@ -2576,7 +2584,7 @@ $('#vq').addEventListener('input', () => {
 $('#vq').addEventListener('keydown', e => { if(e.key==='Enter'){ $('#vres button')?.click(); } });
 $('#vres').addEventListener('click', e => {
   const b = e.target.closest('button'); if(!b) return;
-  state.vsel = state.colabs[+b.dataset.i]; state.vprev = null;
+  state.vsel = state.colabs[+b.dataset.i]; state.vprev = null; state.vedit = null;
   $('#vq').value = ''; $('#vres').hidden = true;
   renderVacInfo(); renderVacCal();
 });
@@ -2595,7 +2603,7 @@ function renderVacInfo(){
     </div>
     <div id="v-stats"></div>
     <div class="vbox" id="v-prog-box">
-      <div class="auth-t">🌴 Programar vacaciones</div>
+      <div class="auth-t" id="v-prog-t">🌴 Programar vacaciones</div>
       <p class="nota-peq">Solo RH o dueños pueden programar, registrar o cancelar vacaciones. Los encargados pueden consultarlas.</p>
       <div class="dos">
         <label class="lbl">Fecha de inicio<input type="date" id="v-ini"></label>
@@ -2603,10 +2611,17 @@ function renderVacInfo(){
       </div>
       <div id="v-prev"></div>
       <button class="btn" id="v-prog" disabled>Programar vacaciones</button>
+      <button class="link" id="v-edit-no" hidden style="display:block;margin:10px auto 0">Cancelar edición</button>
     </div>
     <div class="dethead"><b>Vacaciones registradas</b></div>
     <div class="det" id="v-lista"></div>`;
-  $('#vquitar').onclick = () => { state.vsel = null; state.vprev = null; renderVacInfo(); renderVacCal(); };
+  $('#vquitar').onclick = () => { state.vsel = null; state.vprev = null; state.vedit = null; renderVacInfo(); renderVacCal(); };
+  $('#v-edit-no').onclick = () => { state.vedit = null; renderVacInfo(); };
+  const ed = state.vedit;
+  $('#v-prog-t').textContent = ed ? '✏️ Editar vacaciones' : '🌴 Programar vacaciones';
+  $('#v-prog').textContent = ed ? 'Guardar cambios' : 'Programar vacaciones';
+  $('#v-edit-no').hidden = !ed;
+  if(ed) $('#v-ini').value = ed.inicio;
   ['#v-ing','#v-desc'].forEach(id => $(id).addEventListener('change', () => { actualizarVacStats(true); actualizarVacPrev(); }));
   ['#v-ini','#v-n'].forEach(id => $(id).addEventListener('input', actualizarVacPrev));
   $('#v-prog').onclick = pedirVacaciones;
@@ -2621,8 +2636,9 @@ function datosVac(){
   const anios = aniosCumplidos(ing, hoy);
   const aniv = `${+ing.slice(0,4) + anios}${ing.slice(4)}`;
   const meses = (() => { let mm = (+hoy.slice(0,4) - +aniv.slice(0,4))*12 + (+hoy.slice(5,7) - +aniv.slice(5,7)); if(+hoy.slice(8) < +aniv.slice(8)) mm--; return Math.max(mm,0); })();
-  const total = diasLFT(anios);
-  const usados = vacVigentes().filter(v => v.colaborador === c.nombre && v.periodo === anios).reduce((s,v) => s + v.dias, 0);
+  const ed = state.vedit, per = ed ? ed.periodo : anios;
+  const total = diasLFT(per);
+  const usados = vacVigentes().filter(v => v.colaborador === c.nombre && v.periodo === per && (!ed || v.id !== ed.id)).reduce((s,v) => s + v.dias, 0);
   return { ing, anios, meses, aniv, limite: sumarMeses(aniv, 6), total, usados, disp: Math.max(total - usados, 0),
            primerAniv: `${+ing.slice(0,4)+1}${ing.slice(4)}` };
 }
@@ -2648,7 +2664,7 @@ function actualizarVacStats(resetN){
   if($('#v-const')) $('#v-const').onclick = imprimirConstancia;
   const puede = !d.sinIngreso && !d.error && d.anios >= 1 && d.disp > 0;
   $('#v-prog-box').hidden = !puede;
-  if(puede && (resetN || !$('#v-n').value)) $('#v-n').value = d.disp;
+  if(puede && (resetN || !$('#v-n').value)) $('#v-n').value = state.vedit ? state.vedit.dias : d.disp;
   if(puede) $('#v-n').max = d.disp;
 }
 
@@ -2659,11 +2675,11 @@ function actualizarVacPrev(){
   if(!ini || !n || d.sinIngreso || d.anios < 1){ $('#v-prev').innerHTML = ''; renderVacCal(); return; }
   if(n > d.disp){ $('#v-prev').innerHTML = `<div class="m-err">Solo le quedan ${d.disp} días disponibles.</div>`; renderVacCal(); return; }
   const r = calcularVacaciones(ini, n, $('#v-desc').value);
-  const propias = vacVigentes().filter(v => v.colaborador === state.vsel.nombre);
+  const propias = vacVigentes().filter(v => v.colaborador === state.vsel.nombre && (!state.vedit || v.id !== state.vedit.id));
   const choque = r.fechas.find(f => propias.some(v => v.fechas.includes(f)));
   const avisos = [];
   if(choque) avisos.push(`<div class="m-err">Ya tiene vacaciones el ${esc(fechaMedia(choque))}.</div>`);
-  if(n < 12 && d.usados === 0 && d.total >= 12) avisos.push(`<div class="m-err" style="background:#fff1d6;color:#9a6200">La ley pide que al menos 12 de sus días se tomen de forma continua.</div>`);
+  if(n < 12 && d.usados === 0 && d.total >= 12 && !state.vedit) avisos.push(`<div class="m-err" style="background:#fff1d6;color:#9a6200">La ley pide que al menos 12 de sus días se tomen de forma continua.</div>`);
   if(r.fechas[r.fechas.length-1] > d.limite) avisos.push(`<div class="m-err" style="background:#fff1d6;color:#9a6200">Termina después del plazo legal (${esc(fechaMedia(d.limite))}).</div>`);
   const companeros = [...new Set(vacVigentes().filter(v => v.sucursal === state.vsel.sucursal && v.colaborador !== state.vsel.nombre && v.fechas.some(f => r.fechas.includes(f))).map(v => v.colaborador))];
   if(companeros.length) avisos.push(`<div class="m-err" style="background:var(--cafe-bg);color:var(--brand)">En ${esc(state.vsel.sucursal)} también estará${companeros.length>1?'n':''} de vacaciones: ${companeros.map(esc).join(', ')}.</div>`);
@@ -2691,22 +2707,28 @@ function renderVacLista(){
         <small>Año de servicio ${v.periodo} · regresa ${esc(fechaMedia(v.regreso))}</small>` : `<b>${v.dias} días tomados antes del sistema</b>
         <small>Año de servicio ${v.periodo} · sin fechas registradas</small>`}
         <small class="autz">✔ Autorizó ${esc(v.autorizo||'—')} · ${esc(fechaCorta(v.fechaReg||v.inicio))} · ${esc(v.horaReg)}</small>
+        ${v.edicion ? `<small class="autz">✏️ ${esc(v.edicion.replace(/\d{4}-\d{2}-\d{2}/g, f => fechaMedia(f)))}</small>` : ''}
         ${v.canceladoPor ? `<small class="canc">✖ Canceló ${esc(v.canceladoPor)} · ${esc(fechaCorta(v.fechaCancel))} · ${esc(v.horaCancel)}</small>` : ''}</span>
-      ${v.canceladoPor ? '' : `<button class="del" data-vid="${esc(v.id)}">Cancelar</button>`}
+      ${v.canceladoPor ? '' : `<span class="i-acc">${v.inicio ? `<button class="link" data-vedit="${esc(v.id)}">Editar</button>` : ''}<button class="del" data-vid="${esc(v.id)}">Cancelar</button></span>`}
     </div>`).join('') : `<div class="loading">Sin vacaciones registradas.</div>`;
   document.querySelectorAll('#v-lista .del').forEach(b => b.onclick = () => {
     const v = state.vac.find(x => x.id === b.dataset.vid); if(v) pedirCancelVac(v);
+  });
+  document.querySelectorAll('#v-lista [data-vedit]').forEach(b => b.onclick = () => {
+    const v = state.vac.find(x => x.id === b.dataset.vedit); if(!v) return;
+    state.vedit = v; state.vprev = null; renderVacInfo();
+    $('#v-prog-box').scrollIntoView({ behavior:'smooth', block:'center' });
   });
 }
 
 function pedirVacaciones(){
   const r = state.vprev, c = state.vsel; if(!r) return;
   $('#m-ic').textContent = '🌴'; $('#m-ic').style.background = 'var(--pan-bg)';
-  $('#m-titulo').textContent = 'Programar vacaciones';
-  $('#m-sub').innerHTML = `<b>${esc(c.nombre)}</b><br><small>${r.fechas.length} días · del ${esc(fechaMedia(r.fechas[0]))} al ${esc(fechaMedia(r.fechas[r.fechas.length-1]))} · regresa ${esc(fechaMedia(r.regreso))}</small>`;
-  $('#m-ok').textContent = 'Autorizar vacaciones';
+  $('#m-titulo').textContent = state.vedit ? 'Editar vacaciones' : 'Programar vacaciones';
+  $('#m-sub').innerHTML = `<b>${esc(c.nombre)}</b><br><small>${state.vedit ? `Antes: ${esc(fechaMedia(state.vedit.inicio))} al ${esc(fechaMedia(state.vedit.fin))} · ahora: ` : ''}${r.fechas.length} días · del ${esc(fechaMedia(r.fechas[0]))} al ${esc(fechaMedia(r.fechas[r.fechas.length-1]))} · regresa ${esc(fechaMedia(r.regreso))}</small>`;
+  $('#m-ok').textContent = state.vedit ? 'Guardar cambios' : 'Autorizar vacaciones';
   abrirModal('vacaciones');
-  state.pendiente = { colab:c, prev:r, ing:$('#v-ing').value, desc:$('#v-desc').value };
+  state.pendiente = { colab:c, prev:r, ing:$('#v-ing').value, desc:$('#v-desc').value, editarId: state.vedit ? state.vedit.id : '' };
 }
 // Días ya tomados antes de usar la app (saldo del periodo actual, sin fechas)
 function pedirPrevias(d){
@@ -2742,12 +2764,13 @@ function pedirCancelVac(v){
 async function hacerVacaciones(enc, pass){
   const p = state.pendiente;
   const v = await api.programarVacaciones({ colaborador:p.colab.nombre, sucursal:p.colab.sucursal, ingreso:p.ing, descanso:p.desc,
-                                            fechas:p.prev.fechas, regreso:p.prev.regreso, encargado:enc, contrasena:pass });
+                                            fechas:p.prev.fechas, regreso:p.prev.regreso, editarId:p.editarId, encargado:enc, contrasena:pass });
   p.colab.ingreso = p.ing; p.colab.descanso = p.desc;
-  state.vac.push(v);
+  const i = state.vac.findIndex(x => x.id === v.id);
+  if(i >= 0) state.vac[i] = v; else state.vac.push(v);
   cerrarModal();
-  toast(`✓ Vacaciones programadas para ${p.colab.nombre.split(' ')[0]} · autorizó ${v.autorizo}`);
-  state.vprev = null; renderVacInfo(); renderVacCal();
+  toast(p.editarId ? `✓ Vacaciones actualizadas: ${v.dias} días, del ${fechaMedia(v.inicio)} al ${fechaMedia(v.fin)}` : `✓ Vacaciones programadas para ${p.colab.nombre.split(' ')[0]} · autorizó ${v.autorizo}`);
+  state.vprev = null; state.vedit = null; renderVacInfo(); renderVacCal();
 }
 async function hacerCancelVac(enc, pass){
   const v = state.pendiente;
