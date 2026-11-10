@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- RH Jacobo · versión 2026-11-06b -->
+<!-- RH Jacobo · versión 2026-11-10 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -1024,6 +1024,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div class="title prow">
       <div><h2>Colaboradores</h2><p>Altas, bajas y datos del personal. Los cambios los autoriza RH con su contraseña.</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="pnuevo-u" style="flex:none">👤 Agregar usuario</button>
         <button class="btn ghost" id="preset" style="flex:none">🔑 Restablecer contraseña</button>
         <button class="btn" id="pnuevo" style="flex:none">+ Nuevo colaborador</button>
       </div>
@@ -1347,6 +1348,14 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <p id="pw-sub"></p>
     <div class="m-err" id="pw-err" hidden></div>
     <div id="pw-form">
+      <div id="pw-alta">
+        <label>Nombre de usuario<input id="pw-un" maxlength="30" autocomplete="off" placeholder="Ej. Lucía (como entrará a la app)"></label>
+        <div class="dos">
+          <label>Rol<select id="pw-ur"><option>Encargado</option><option>RH</option><option>Dueño</option></select></label>
+          <label>Sucursal<select id="pw-us"><option>Río</option><option>Otay</option><option>Monarca</option><option>Todas</option></select></label>
+        </div>
+        <label>Colaborador (opcional)<select id="pw-uc"></select></label>
+      </div>
       <label id="pw-otro-wrap">Usuario al que se le restablece
         <select id="pw-otro"></select>
       </label>
@@ -1653,6 +1662,7 @@ const remote = {
   cancelarActividad(d){ return this.post({action:'cancelarActividad', ...d}); },
   guardarEvaluacion(d){ return this.post({action:'guardarEvaluacion', ...d}); },
   restablecerContrasena(d){ return this.post({action:'restablecerContrasena', ...d}); },
+  crearUsuario(d){ return this.post({action:'crearUsuario', ...d}); },
   incidencias(){ return this.get({action:'incidencias'}); },
   registrarIncidencia(d){ return this.post({action:'registrarIncidencia', ...d}); },
   cancelarIncidencia(d){ return this.post({action:'cancelarIncidencia', ...d}); },
@@ -1781,6 +1791,13 @@ const demo = {
     if(!otro) throw new Error('AUTH|Usuario no encontrado o dado de baja.');
     if(otro.rol === 'Dueño' && yo.rol !== 'Dueño') throw new Error('AUTH|Solo un dueño puede restablecer la contraseña de otro dueño.');
     return { usuario:otro.nombre, nueva:String(Math.floor(100000 + Math.random()*900000)), por:quien, demo:true };
+  },
+  async crearUsuario(d){
+    const quien = await this.soloRH(d, 'Solo RH o dueños pueden agregar usuarios.');
+    const yo = (await this.encargados()).find(x => x.nombre === quien);
+    if(d.rol === 'Dueño' && yo.rol !== 'Dueño') throw new Error('AUTH|Solo un dueño puede crear otro usuario de dueño.');
+    if((await this.encargados()).some(x => norm(x.nombre) === norm(d.usuario))) throw new Error('AUTH|Ya existe un usuario con ese nombre.');
+    return { usuario:d.usuario, sucursal:d.sucursal, rol:d.rol, nueva:String(Math.floor(100000 + Math.random()*900000)), por:quien, demo:true };
   },
   async autorizarAcceso(d){
     const quien = this.verificar(d.encargado, d.contrasena);
@@ -2854,42 +2871,57 @@ $('#c-cmes').innerHTML = '<option value="">Mes</option>' + MESES.map((m, i) => `
 /* ---------- Contraseñas ---------- */
 function abrirPw(modo){
   state.pwModo = modo;
-  const rh = modo === 'reset';
+  const alta = modo === 'nuevo', rh = modo === 'reset' || alta;
   const nombres = (state.encargados || []).map(e => e.nombre);
   const opts = l => '<option value="">Elegir…</option>' + l.map(n => `<option>${esc(n)}</option>`).join('');
-  $('#pw-titulo').textContent = rh ? 'Restablecer contraseña' : 'Cambiar mi contraseña';
-  $('#pw-sub').textContent = rh
-    ? 'Para quien olvidó su contraseña. Se genera una nueva de 6 dígitos que se muestra una sola vez; después la persona puede cambiarla.'
+  $('#pw-titulo').textContent = alta ? 'Agregar usuario' : rh ? 'Restablecer contraseña' : 'Cambiar mi contraseña';
+  $('#pw-sub').textContent = alta
+    ? 'Para quien necesita entrar a la app (encargados, RH). Se genera su contraseña de 6 dígitos y se muestra una sola vez.'
+    : rh ? 'Para quien olvidó su contraseña. Se genera una nueva de 6 dígitos que se muestra una sola vez; después la persona puede cambiarla.'
     : 'Elegir tu usuario, escribir tu contraseña actual y la nueva.';
-  $('#pw-otro-wrap').hidden = !rh; $('#pw-nuevas').hidden = rh;
+  $('#pw-otro-wrap').hidden = !rh || alta; $('#pw-nuevas').hidden = rh; $('#pw-alta').hidden = !alta;
+  $('#pw-un').value = ''; $('#pw-ur').value = 'Encargado'; $('#pw-us').value = 'Río';
+  $('#pw-uc').innerHTML = '<option value="">Sin ligar</option>' + (state.colabs || []).map(c => `<option value="${esc(c.nombre)}">${esc(c.nombre)} · ${esc(c.sucursal || 'sin sucursal')}</option>`).join('');
   $('#pw-otro').innerHTML = opts(nombres);
   $('#pw-user').innerHTML = opts(rh ? (state.encargados || []).filter(accesoTotal).map(e => e.nombre) : nombres);
   $('#pw-user-lbl').textContent = rh ? 'Autoriza (RH o dueño)' : 'Usuario';
   $('#pw-pass-lbl').textContent = rh ? 'Contraseña de quien autoriza' : 'Contraseña actual';
   ['#pw-pass', '#pw-n1', '#pw-n2'].forEach(k => $(k).value = '');
   $('#pw-err').hidden = true; $('#pw-res').hidden = true; $('#pw-form').hidden = false;
-  $('#pw-ok').hidden = false; $('#pw-ok').textContent = rh ? 'Restablecer' : 'Guardar'; $('#pw-no').textContent = 'Cancelar';
+  $('#pw-ok').hidden = false; $('#pw-ok').textContent = alta ? 'Crear usuario' : rh ? 'Restablecer' : 'Guardar'; $('#pw-no').textContent = 'Cancelar';
   $('#pw-modal').hidden = false;
 }
 $('#irPw').onclick = () => abrirPw('cambiar');
 $('#preset').onclick = () => abrirPw('reset');
+$('#pnuevo-u').onclick = () => abrirPw('nuevo');
+$('#pw-uc').onchange = () => { const c = (state.colabs || []).find(x => x.nombre === $('#pw-uc').value);
+  if(c){ if(!$('#pw-un').value.trim()) $('#pw-un').value = c.nombre.split(' ')[0]; if(c.sucursal) $('#pw-us').value = c.sucursal; } };
+$('#pw-ur').onchange = () => { if($('#pw-ur').value !== 'Encargado') $('#pw-us').value = 'Todas'; };
 $('#pw-no').onclick = () => { $('#pw-modal').hidden = true; $('#pw-res').innerHTML = ''; };
 $('#pw-ok').onclick = async () => {
-  const rh = state.pwModo === 'reset', err = t => { $('#pw-err').textContent = t; $('#pw-err').hidden = false; };
+  const alta = state.pwModo === 'nuevo', rh = state.pwModo === 'reset' || alta, err = t => { $('#pw-err').textContent = t; $('#pw-err').hidden = false; };
   $('#pw-err').hidden = true;
   const d = { encargado: $('#pw-user').value, contrasena: $('#pw-pass').value };
-  if(rh && !$('#pw-otro').value) return err('Elegir a quién se le restablece la contraseña.');
+  if(alta && $('#pw-un').value.trim().length < 2) return err('Escribir el nombre de usuario.');
+  if(alta && (state.encargados || []).some(e => norm(e.nombre) === norm($('#pw-un').value.trim()))) return err('Ya existe un usuario con ese nombre.');
+  if(state.pwModo === 'reset' && !$('#pw-otro').value) return err('Elegir a quién se le restablece la contraseña.');
   if(!d.encargado) return err(rh ? 'Elegir quién autoriza.' : 'Elegir tu usuario.');
   if(!d.contrasena) return err('Escribir la contraseña.');
   if(!rh){
     if($('#pw-n1').value.length < 6) return err('La nueva contraseña debe tener al menos 6 caracteres.');
     if($('#pw-n1').value !== $('#pw-n2').value) return err('Las contraseñas nuevas no coinciden.');
     d.nueva = $('#pw-n1').value;
-  } else d.usuario = $('#pw-otro').value;
+  } else if(alta) Object.assign(d, { usuario: $('#pw-un').value.trim(), rol: $('#pw-ur').value, sucursal: $('#pw-us').value, colaborador: $('#pw-uc').value });
+  else d.usuario = $('#pw-otro').value;
   const b = $('#pw-ok'); b.disabled = true;
   try{
-    const r = rh ? await api.restablecerContrasena(d) : await api.cambiarContrasena(d);
+    const r = alta ? await api.crearUsuario(d) : rh ? await api.restablecerContrasena(d) : await api.cambiarContrasena(d);
     $('#pw-form').hidden = true; $('#pw-ok').hidden = true; $('#pw-no').textContent = 'Cerrar';
+    if(alta){
+      state.encargados = (state.encargados || []).concat({ nombre:r.usuario, sucursal:r.sucursal, rol:r.rol }).sort((a,b) => a.nombre.localeCompare(b.nombre,'es'));
+      $('#pw-res').innerHTML = `<p>✓ Usuario <b>${esc(r.usuario)}</b> creado · ${esc(r.rol)} · ${esc(r.sucursal)}</p><p>Su contraseña:</p><div class="pw-pin">${esc(r.nueva)}</div>
+        <p style="font-size:13px">Entregársela en persona; no se vuelve a mostrar. Al entrar puede cambiarla en 🔑 Cambiar mi contraseña. Creó: ${esc(r.por)}.${r.demo ? ' <b>(Modo prueba: no se guarda.)</b>' : ''}</p>`;
+    } else
     $('#pw-res').innerHTML = rh
       ? `<p>Nueva contraseña de <b>${esc(r.usuario)}</b>:</p><div class="pw-pin">${esc(r.nueva)}</div>
          <p style="font-size:13px">Entregársela en persona. No se vuelve a mostrar. Restableció: ${esc(r.por)}.${r.demo ? ' <b>(Modo prueba: no se guarda.)</b>' : ''}</p>`
