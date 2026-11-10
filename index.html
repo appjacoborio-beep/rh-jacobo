@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- RH Jacobo · versión 2026-11-10 -->
+<!-- RH Jacobo · versión 2026-11-10b -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -1117,7 +1117,6 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
         <div class="dows"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
         <div class="cal" id="vcal"></div>
         <div class="legend"><span><i class="dot rio"></i>Río</span><span><i class="dot otay"></i>Otay</span><span><i class="dot monarca"></i>Monarca</span><span><i class="dot nuevo"></i>Por programar</span><span><i class="dot fest"></i>Festivo</span></div>
-        <div class="vdia" id="vdia"></div>
       </div>
       <aside class="panel side">
         <h3>Colaborador</h3>
@@ -1126,6 +1125,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
           <div class="results" id="vres" hidden></div>
         </div>
         <div id="vinfo"></div>
+        <div class="vdia" id="vdia"></div>
       </aside>
     </div>
   </section>
@@ -2575,6 +2575,7 @@ $('#vcal').addEventListener('click', e => {
   const d = e.target.closest('.day[data-f]'); if(!d) return;
   state.vdia = state.vdia === d.dataset.f ? null : d.dataset.f;
   renderVacCal();
+  if(state.vdia && window.innerWidth < 900) $('#vdia').scrollIntoView({ behavior:'smooth', block:'start' });
 });
 function moverVacMes(n){
   let {y,m} = state.vcal; m += n; if(m<1){m=12;y--;} if(m>12){m=1;y++;}
@@ -2589,7 +2590,7 @@ function renderVacDia(porDia){
   if(!f){ $('#vdia').innerHTML = `<div class="loading">Tocar un día para ver quién está de vacaciones.</div>`; return; }
   const lista = porDia[f] || [];
   const fest = esFestivo(f);
-  $('#vdia').innerHTML = `<b>${esc(fechaLarga(f))}</b>${fest ? ` <span class="loading">· ${esc(fest)} (festivo)</span>` : ''}` +
+  $('#vdia').innerHTML = `<b>${esc(fechaLarga(f))}</b> <span class="loading">· ${lista.length} de vacaciones</span>${fest ? ` <span class="loading">· ${esc(fest)} (festivo)</span>` : ''}` +
     (lista.length ? lista.map(v => `<div class="vrow"><span class="dot ${SUC_COLOR[v.sucursal]||''}"></span>
       <span class="t"><b>${esc(v.colaborador)}</b><small>${esc(v.sucursal)} · del ${esc(fechaMedia(v.inicio))} al ${esc(fechaMedia(v.fin))} · regresa ${esc(fechaMedia(v.regreso))}</small></span></div>`).join('')
       : `<div class="loading" style="margin-top:6px">Nadie de vacaciones este día${state.vfiltro!=='Todas' ? ' en '+esc(state.vfiltro) : ''}.</div>`);
