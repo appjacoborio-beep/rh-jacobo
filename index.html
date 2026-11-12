@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- RH Jacobo · versión 2026-11-10b -->
+<!-- RH Jacobo · versión 2026-11-12 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -221,6 +221,10 @@ button.ac-item:hover{background:var(--bg)}
 .sd-k{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:4px;vertical-align:-1px;background:var(--err)}
 .sd-k.vac{background:#f2c12e} .sd-k.desc{background:#b8612a;border-radius:50%;width:7px;height:7px;vertical-align:1px}
 .sd-ley{margin-top:8px;font-size:12px}
+#act-modal.bloqueo{z-index:300;background:var(--bg)}
+body.solo-lectura #salir{display:none}
+.htab th.h-fest{background:#1f8a4c}
+.htab th .h-festl{display:block;margin:3px auto 0;background:#fff;color:#1f8a4c;border-radius:4px;font-size:9px;font-weight:800;padding:1px 5px;width:fit-content;letter-spacing:.04em}
 .pie-ini{text-align:center;margin-top:22px}
 .linkbtn{background:none;border:0;color:var(--brand);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:8px 12px;border-radius:8px}
 .linkbtn:hover{background:var(--cafe-bg)}
@@ -747,6 +751,8 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   .htab tr:first-child th:first-child{border-top-left-radius:20px}
   .htab tr:first-child th:last-child{border-top-right-radius:20px}
   .htab th.h-hoy{background:linear-gradient(180deg,#ff6a61,#ff3b30)}
+  .htab th.h-fest{background:linear-gradient(180deg,#47b880,#34a56f)}
+  #act-modal.bloqueo{background:var(--lg-page);-webkit-backdrop-filter:none;backdrop-filter:none}
   .htab td{border-bottom-color:var(--lg-line);border-right-color:var(--lg-solid)}
   .htab .h-nom{background:var(--lg-solid);border-right-color:var(--lg-line)}
   .htab td.h-nom b{color:var(--lg-accent-t)}
@@ -868,6 +874,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
   <div class="brand"><b>Jacobo</b><small>Recursos Humanos</small></div>
   <div class="spacer"></div>
   <div class="reloj" id="reloj"></div>
+  <button class="ayuda" id="salir" title="Cerrar sesión" aria-label="Cerrar sesión">🔒</button>
   <button class="ayuda" id="ayuda" title="Ver guía de esta pantalla" aria-label="Ayuda">❓</button>
 </header>
 <div class="demo" id="demo" hidden>Modo prueba: los registros se guardan solo en este dispositivo. Para compartirlos entre sucursales, pegar la URL del Apps Script en <b>API_URL</b>. Contraseña de prueba: <b>1234</b>.</div>
@@ -1284,8 +1291,8 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
 <div class="modal" id="act-modal" hidden>
   <div class="sheet">
     <div class="big" style="background:var(--cafe-bg)">🔐</div>
-    <h3>Activar este dispositivo</h3>
-    <p>Por seguridad, cada celular o computadora se activa <b>una sola vez</b> con un usuario y contraseña. Dura 90 días.</p>
+    <h3 id="act-tit">Iniciar sesión</h3>
+    <p id="act-sub">Entrar con usuario y contraseña.</p>
     <div class="m-err" id="act-err" hidden></div>
     <label>Usuario
       <select id="act-user"><option value="">Cargando…</option></select>
@@ -1613,31 +1620,70 @@ function textoUsado(r){
 }
 
 /* =================== DATOS =================== */
-let activando = null;   // una sola ventana de activación aunque fallen varias lecturas a la vez
-function pedirActivacion(){
+/* ---------- Inicio de sesión ----------
+   Al abrir la app se pide usuario y contraseña. Tras 10 minutos sin usarla se bloquea sola (o con 🔒).
+   Con el API real, entrar también renueva la activación del dispositivo (token de lectura). */
+const SESION_MIN = 10;
+let activando = null;   // una sola ventana aunque fallen varias lecturas a la vez
+function sesionGet(){ try{ return JSON.parse(sessionStorage.getItem('rh_sesion') || 'null'); }catch(e){ return null; } }
+function sesionSet(v){ try{ v ? sessionStorage.setItem('rh_sesion', JSON.stringify(v)) : sessionStorage.removeItem('rh_sesion'); }catch(e){} }
+const sesionVigente = () => { const x = sesionGet(); return !!(x && Date.now() - x.t < SESION_MIN * 60000); };
+function mostrarAcceso(modo){
   if(activando) return activando;
   activando = new Promise(async res => {
+    const activar = modo === 'activar';
+    $('#act-tit').textContent = activar ? 'Activar este dispositivo' : 'Iniciar sesión';
+    $('#act-sub').innerHTML = activar ? 'Por seguridad, este celular o computadora se activa con un usuario y contraseña. Dura 90 días.'
+      : 'Para ver la información de RH, entrar con usuario y contraseña. La sesión se cierra sola tras 10 minutos sin usarse.';
+    $('#act-modal').classList.add('bloqueo');
     $('#act-modal').hidden = false; $('#act-err').hidden = true; $('#act-pass').value = '';
     try{
-      const encs = await remote.get({action:'encargados'});
+      const encs = API_URL ? await remote.get({action:'encargados'}) : await demo.encargados();
+      const ult = lsGet('rh_encargado', '');
       $('#act-user').innerHTML = '<option value="">Elegir…</option>' +
-        encs.map(x => x.nombre).sort((a,b) => a.localeCompare(b,'es')).map(n => `<option>${esc(n)}</option>`).join('');
+        encs.map(x => x.nombre).sort((a,b) => a.localeCompare(b,'es')).map(n => `<option ${n === ult ? 'selected' : ''}>${esc(n)}</option>`).join('');
     }catch(e){ $('#act-user').innerHTML = '<option value="">Sin conexión</option>'; }
+    $('#act-ok').textContent = activar ? 'Activar' : 'Entrar';
     $('#act-ok').onclick = async () => {
       const b = $('#act-ok'); b.disabled = true; $('#act-err').hidden = true;
       try{
-        const r = await remote.post({action:'activarDispositivo', encargado: $('#act-user').value, contrasena: $('#act-pass').value});
-        lsSet('rh_token', r.token);
-        $('#act-modal').hidden = true; activando = null;
-        toast(`Dispositivo activado por ${r.usuario} hasta ${fechaLarga(r.vence)}`);
-        res(); setTimeout(() => tourAuto(state.view || 'inicio'), 600);
-      }catch(e){ $('#act-err').textContent = e.message.replace(/^AUTH\|/, ''); $('#act-err').hidden = false; }
+        const u = $('#act-user').value, p = $('#act-pass').value;
+        if(!u || !p) throw new Error('Elegir el usuario y escribir la contraseña.');
+        let usuario;
+        if(API_URL){ const r = await remote.post({action:'activarDispositivo', encargado:u, contrasena:p}); lsSet('rh_token', r.token); usuario = r.usuario; }
+        else usuario = demo.verificar(u, p);
+        lsSet('rh_encargado', usuario);
+        sesionSet({ u: usuario, t: Date.now() });
+        $('#act-modal').hidden = true; $('#act-modal').classList.remove('bloqueo'); $('#act-pass').value = ''; activando = null;
+        toast(`Sesión iniciada · ${usuario}`);
+        res();
+      }catch(e){ $('#act-err').textContent = e.message.replace(/^AUTH\|/, ''); $('#act-err').hidden = false; $('#act-pass').value = ''; }
       b.disabled = false;
     };
     $('#act-pass').onkeydown = e => { if(e.key === 'Enter') $('#act-ok').click(); };
+    setTimeout(() => ($('#act-user').value ? $('#act-pass') : $('#act-user')).focus(), 100);
   });
   return activando;
 }
+const pedirActivacion = () => mostrarAcceso('activar');
+async function asegurarSesion(){ if(!sesionVigente()) await mostrarAcceso('sesion'); }
+function cerrarSesion(){
+  sesionSet(null);
+  document.querySelectorAll('.modal:not([hidden])').forEach(m => { if(m.id !== 'act-modal') m.hidden = true; });
+  mostrarAcceso('sesion');
+}
+// Actividad: mantiene la sesión abierta mientras se usa
+let ultimoToque = 0;
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => {
+  const x = sesionGet(); if(!x || activando || Date.now() - ultimoToque < 15000) return;
+  ultimoToque = Date.now(); sesionSet({ ...x, t: ultimoToque });
+}, true));
+function revisarSesion(){
+  if(document.body.classList.contains('solo-lectura') || activando || !sesionGet()) return;
+  if(!sesionVigente()) cerrarSesion();
+}
+setInterval(revisarSesion, 20000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) revisarSesion(); });
 const remote = {
   async get(params){
     const r = await fetch(API_URL + '?' + new URLSearchParams({...params, token: lsGet('rh_token', '')}));
@@ -2893,6 +2939,7 @@ function abrirPw(modo){
   $('#pw-modal').hidden = false;
 }
 $('#irPw').onclick = () => abrirPw('cambiar');
+$('#salir').onclick = cerrarSesion;
 $('#preset').onclick = () => abrirPw('reset');
 $('#pnuevo-u').onclick = () => abrirPw('nuevo');
 $('#pw-uc').onchange = () => { const c = (state.colabs || []).find(x => x.nombre === $('#pw-uc').value);
@@ -3182,7 +3229,7 @@ function renderHorario(){
   if(!d) d = { personas:[], c:{} };
   const q = norm($('#h-q').value.trim());
   const hoy = hoyISO();
-  let html = `<thead><tr><th class="h-nom">Colaborador</th>${DIAS_H.map((dia,i) => { const f = sumarDias(state.hsem,i); return `<th class="${f===hoy?'h-hoy':''}" data-i="${i}">${dia}<small>${+f.slice(8)} ${MESES_C[+f.slice(5,7)-1]}</small></th>`; }).join('')}</tr></thead><tbody>`;
+  let html = `<thead><tr><th class="h-nom">Colaborador</th>${DIAS_H.map((dia,i) => { const f = sumarDias(state.hsem,i); const fest = esFestivo(f); return `<th class="${fest ? 'h-fest' : f===hoy ? 'h-hoy' : ''}" data-i="${i}" ${fest ? `title="${esc(fest)}"` : ''}>${dia}<small>${+f.slice(8)} ${MESES_C[+f.slice(5,7)-1]}${fest && f===hoy ? ' · hoy' : ''}</small>${fest ? '<span class="h-festl">FESTIVO</span>' : ''}</th>`; }).join('')}</tr></thead><tbody>`;
   const sinDescanso = []; let conVacios = 0;
   state.hfilas = [];
   if(!ed) state.hsel = new Set();
@@ -4953,6 +5000,7 @@ async function init(){
   // No pide activación ni carga datos personales: solo el horario y quién está de vacaciones.
   const params = new URLSearchParams(location.search);
   if(params.has('horario')) document.body.classList.add('solo-lectura');
+  else await asegurarSesion();
   try{
     const [colabs, encs] = await Promise.all([params.has('horario') ? [] : api.colaboradores(), api.encargados()]);
     actualizarListas(colabs);
