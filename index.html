@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- RH Jacobo · versión 2026-11-12 -->
+<!-- RH Jacobo · versión 2026-11-24 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -3774,6 +3774,9 @@ const SUSP_MAX = 8;   // LFT art. 423 fr. X: la suspensión disciplinaria no pue
 const diasEntre = (a, b) => Math.round((dUTC(b) - dUTC(a)) / 864e5) + 1;
 const RETARDOS_POR_FALTA = 3;   // regla interna
 const FALTAS_LIMITE = 3;        // LFT art. 47 fr. X: más de 3 faltas en 30 días
+const GRAVES_LIMITE = 3;        // regla interna: más de 3 incidencias graves en el mes = se comienza a sancionar
+const TIPOS_GRAVES = ['falta', 'retardo', 'salida', 'llamado'];   // las que cuentan como graves
+const PLURAL_GRAVE = { falta:'faltas', retardo:'retardos', salida:'salidas anticipadas', llamado:'llamados de atención' };
 
 function etiquetaInc(x){
   if(x.tipo === 'retardo') return `Retardo ${x.minutos} min`;
@@ -3803,6 +3806,14 @@ function alertasDe(nombre, ref){
   if(ret >= RETARDOS_POR_FALTA){
     const eq = Math.floor(ret / RETARDOS_POR_FALTA);
     out.push({ nivel:'medio', txt:`${ret} retardos en ${MESES[+mes.slice(5)-1]}: equivalen a ${eq} falta${eq>1?'s':''} (regla interna: ${RETARDOS_POR_FALTA} retardos = 1 falta).` });
+  }
+  const graves = propias.filter(x => TIPOS_GRAVES.includes(x.tipo) && x.fecha.slice(0, 7) === mes);
+  if(graves.length >= GRAVES_LIMITE){
+    const cuenta = TIPOS_GRAVES.map(t => [t, graves.filter(x => x.tipo === t).length]).filter(([, n]) => n)
+      .map(([t, n]) => `${n} ${n > 1 ? PLURAL_GRAVE[t] : TIPOS_INC[t].txt.toLowerCase()}`).join(', ');
+    out.push(graves.length > GRAVES_LIMITE
+      ? { nivel:'alto', txt:`🚨 Por sancionar: ${graves.length} incidencias graves en ${MESES[+mes.slice(5)-1]} (${cuenta}). Pasa de ${GRAVES_LIMITE}: aplicar la sanción que corresponda según el reglamento.` }
+      : { nivel:'medio', txt:`${graves.length} incidencias graves en ${MESES[+mes.slice(5)-1]} (${cuenta}). Una más y se comienza a sancionar.` });
   }
   const desde = sumarDias(ref, -29);
   const faltas = propias.filter(x => x.tipo === 'falta' && x.fecha >= desde && x.fecha <= ref).length;
@@ -3960,7 +3971,7 @@ async function hacerIncidencia(enc, pass){
   const r = await api.registrarIncidencia({ ...d, encargado:enc, contrasena:pass });
   state.inc.push(r);
   cerrarModal();
-  const al = (r.tipo === 'retardo' || r.tipo === 'falta') ? alertasDe(r.colaborador, r.fecha) : [];
+  const al = TIPOS_GRAVES.includes(r.tipo) ? alertasDe(r.colaborador, r.fecha) : [];
   if(al.length) avisoModal('⚠️', `Registrado: ${etiquetaInc(r)}`, `<b>${esc(r.colaborador)}</b><br>${al.map(a => esc(a.txt)).join('<br><br>')}`);
   else toast(`✓ Registrado: ${etiquetaInc(r)} · ${r.colaborador.split(' ')[0]} · ${r.registro.split(' ')[0]}`);
   refrescarVistasInc();
