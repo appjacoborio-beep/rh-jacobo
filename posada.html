@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Posada Jacobo · versión 2026-11-25b -->
+<!-- Posada Jacobo · versión 2026-11-25c -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -103,12 +103,17 @@ main{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:28px 16px
 .cambiar{margin-top:14px;border:0;background:none;color:var(--rojo);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .pie{text-align:center;color:var(--sec);font-size:12px;margin-top:24px}
 #confeti{position:fixed;inset:0;pointer-events:none;z-index:20}
+#musica{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:15;width:50px;height:50px;border-radius:50%;border:1px solid rgba(217,183,120,.55);
+  background:rgba(23,51,36,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--oro2);font-size:22px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+#musica.suena{animation:latido 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
 <canvas id="nieve" aria-hidden="true"></canvas>
 <canvas id="confeti" aria-hidden="true"></canvas>
+<audio id="cancion" src="posada.mp3" loop preload="auto"></audio>
+<button id="musica" aria-label="Música">🎵</button>
 
 <div id="sobre">
   <div>
@@ -180,6 +185,16 @@ function abrirSobre(){
   setTimeout(() => $('#sobre').classList.add('fuera'), QUIETO ? 0 : 1500);
 }
 $('#abrir').onclick = abrirSobre;
+
+/* ---------- Música (en loop; el celular solo deja sonar después de un toque) ---------- */
+const cancion = $('#cancion'), btnMus = $('#musica');
+let callada = false;
+function tocar(){ if(callada) return; cancion.volume = .7; cancion.play().catch(() => {}); }
+cancion.onplay = () => { btnMus.textContent = '🔊'; btnMus.classList.add('suena'); };
+cancion.onpause = () => { btnMus.textContent = '🔇'; btnMus.classList.remove('suena'); };
+btnMus.onclick = e => { e.stopPropagation(); if(cancion.paused){ callada = false; tocar(); } else { callada = true; cancion.pause(); } };
+$('#abrir').addEventListener('click', tocar);
+document.addEventListener('pointerdown', e => { if(!btnMus.contains(e.target)) tocar(); }, { once:true });
 if(lsGet('posada_abierta')) $('#sobre').hidden = true;
 else $('#abrir').addEventListener('click', () => lsSet('posada_abierta', true), { once:true });
 
