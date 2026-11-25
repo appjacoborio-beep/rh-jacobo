@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Posada Jacobo · versión 2026-11-25c -->
+<!-- Posada Jacobo · versión 2026-11-25d -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -194,9 +194,6 @@ cancion.onplay = () => { btnMus.textContent = '🔊'; btnMus.classList.add('suen
 cancion.onpause = () => { btnMus.textContent = '🔇'; btnMus.classList.remove('suena'); };
 btnMus.onclick = e => { e.stopPropagation(); if(cancion.paused){ callada = false; tocar(); } else { callada = true; cancion.pause(); } };
 $('#abrir').addEventListener('click', tocar);
-document.addEventListener('pointerdown', e => { if(!btnMus.contains(e.target)) tocar(); }, { once:true });
-if(lsGet('posada_abierta')) $('#sobre').hidden = true;
-else $('#abrir').addEventListener('click', () => lsSet('posada_abierta', true), { once:true });
 
 /* ---------- Enlaces ---------- */
 $('#mapa').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Hacienda Santa Mónica Mesa de Otay Tijuana');
