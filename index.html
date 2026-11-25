@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- RH Jacobo · versión 2026-11-24 -->
+<!-- RH Jacobo · versión 2026-11-25b -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -275,6 +275,14 @@ body.solo-lectura #salir{display:none}
 /* Modal */
 .modal{position:fixed;inset:0;z-index:50;background:rgba(10,20,45,.5);display:grid;place-items:center;padding:16px}
 .modal[hidden]{display:none}
+.pos-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.pos-stats div{border-radius:14px;padding:10px 6px;text-align:center;background:rgba(127,127,127,.08)}
+.pos-stats b{display:block;font-size:24px}
+.pos-stats small{font-size:12px;opacity:.75}
+.pos-g{margin:12px 0 4px;font-size:13px;font-weight:700;opacity:.8}
+.pos-r{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(127,127,127,.15);font-size:14px}
+.pos-r small{opacity:.7}
+.pos-r .m{display:block;font-style:italic;opacity:.75;font-size:12.5px}
 .sheet{width:100%;max-width:420px;max-height:calc(100vh - 32px);overflow-y:auto;background:var(--card);border-radius:20px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;animation:pop .16s ease-out}
 @keyframes pop{from{transform:scale(.95);opacity:0}}
 .sheet .big{font-size:44px;width:76px;height:76px;margin:0 auto 10px;border-radius:20px;display:grid;place-items:center}
@@ -1085,6 +1093,7 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div class="title prow">
       <div><h2>Actividades y <span class="kw">eventos</span></h2><p>Capacitaciones, posadas, juntas y eventos de las sucursales, junto con los días festivos oficiales.</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="ac-posada" style="flex:none">🎄 Confirmaciones posada</button>
         <button class="btn ghost" id="ac-print" style="flex:none">🖨️ Imprimir mes</button>
         <button class="btn" id="ac-nueva" style="flex:none">+ Nueva actividad</button>
       </div>
@@ -1271,6 +1280,23 @@ body:not(.h-editando):not(.solo-lectura) #h-tab td.h-cel[data-n]:hover{outline:2
     <div class="actions">
       <button class="btn ghost" id="rp-cancel">Cancelar</button>
       <button class="btn" id="rp-ok">🖨️ Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmaciones de la posada -->
+<div class="modal" id="pos-modal" hidden>
+  <div class="sheet" style="max-width:520px;text-align:left">
+    <div class="big" style="background:#e3f4ea;margin:0 auto">🎄</div>
+    <h3 style="text-align:center">Confirmaciones de la posada</h3>
+    <p style="text-align:center">16 de diciembre · 8:00 p.m. · Hacienda Santa Mónica</p>
+    <div class="pills" id="pos-pills" style="margin:10px 0"></div>
+    <div class="pos-stats" id="pos-stats"></div>
+    <div id="pos-list"><div class="loading">Cargando…</div></div>
+    <div class="actions">
+      <button class="btn ghost" id="pos-link">🔗 Copiar link</button>
+      <button class="btn ghost" id="pos-print">🖨️ Imprimir</button>
+      <button class="btn" id="pos-cerrar">Cerrar</button>
     </div>
   </div>
 </div>
@@ -1704,6 +1730,7 @@ const remote = {
   cambiarContrasena(d){ return this.post({action:'cambiarContrasena', ...d}); },
   empleadoMes(mes){ return this.get({action:'empleadoMes', mes}); },
   actividades(){ return this.get({action:'actividades'}); },
+  posada(){ return this.get({action:'posada'}); },
   guardarActividad(d){ return this.post({action:'guardarActividad', ...d}); },
   cancelarActividad(d){ return this.post({action:'cancelarActividad', ...d}); },
   guardarEvaluacion(d){ return this.post({action:'guardarEvaluacion', ...d}); },
@@ -1794,6 +1821,7 @@ const demo = {
   async vacaciones(){ return lsGet('rh_demo_vac', []); },
   async empleadoMes(mes){ return Object.values(lsGet('rh_demo_emp', {})).filter(x => x.mes === mes); },
   async actividades(){ return lsGet('rh_demo_act', []); },
+  async posada(){ return lsGet('rh_demo_posada', [{gafete:'JAC0015',nombre:'Ruth Aguilar Ramirez',sucursal:'Río',asiste:true,mensaje:'¡Ahí estaré!',fecha:hoyISO(),hora:'10:15',cambios:0},{gafete:'JAC0003',nombre:'Diego Saldaña Rodriguez',sucursal:'Río',asiste:false,mensaje:'',fecha:hoyISO(),hora:'11:02',cambios:1}]); },
   async soloRH(d, msg){
     const quien = this.verificar(d.encargado, d.contrasena);
     if(!accesoTotal((await this.encargados()).find(x => x.nombre === quien))) throw new Error('AUTH|' + msg);
@@ -4999,6 +5027,48 @@ $('#irPersonal').onclick = () => conAcceso(abrirPersonal, 'Colaboradores');
 $('#irHor').onclick = abrirHorarios;
 $('#irCum').onclick = abrirCumple;
 $('#irAct').onclick = abrirActividades;
+
+/* =================== POSADA: CONFIRMACIONES =================== */
+const POSADA_URL = 'https://appjacoborio-beep.github.io/rh-jacobo/posada.html';
+async function abrirPosada(){
+  $('#pos-modal').hidden = false; $('#pos-list').innerHTML = '<div class="loading">Cargando…</div>'; $('#pos-stats').innerHTML = '';
+  try{ state.posada = await api.posada(); }
+  catch(e){ $('#pos-list').innerHTML = `<div class="loading">No se pudieron cargar: ${esc(e.message)}</div>`; return; }
+  state.psuc = state.psuc || 'Todas'; renderPosada();
+}
+function datosPosada(){
+  const f = x => state.psuc === 'Todas' || x.sucursal === state.psuc;
+  const resp = (state.posada || []).filter(f);
+  const ya = new Set((state.posada || []).map(r => r.gafete));
+  const si = resp.filter(r => r.asiste), no = resp.filter(r => !r.asiste);
+  const sin = (state.colabs || []).filter(c => f(c) && !ya.has(c.gafete));
+  return { si, no, sin };
+}
+function renderPosada(){
+  const sucs = ['Todas', ...SUCURSALES];
+  $('#pos-pills').innerHTML = sucs.map(x => `<button class="pill${x === state.psuc ? ' on' : ''}" data-s="${esc(x)}">${esc(x)}</button>`).join('');
+  document.querySelectorAll('#pos-pills .pill').forEach(p => p.onclick = () => { state.psuc = p.dataset.s; renderPosada(); });
+  const { si, no, sin } = datosPosada();
+  $('#pos-stats').innerHTML = `<div style="color:#1f8a4c"><b>${si.length}</b><small>🎉 Asisten</small></div><div style="color:#c3313b"><b>${no.length}</b><small>😔 No van</small></div><div><b>${sin.length}</b><small>⏳ Sin responder</small></div>`;
+  const ord = l => l.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  const fila = r => `<div class="pos-r"><div>${esc(r.nombre)}${r.gafete ? ` <small>${esc(r.gafete)}</small>` : ' <small>(sin gafete, no puede confirmar)</small>'}${r.mensaje ? `<span class="m">“${esc(r.mensaje)}”</span>` : ''}</div><small>${esc(r.sucursal || '')}</small></div>`;
+  const grupo = (t, l) => l.length ? `<div class="pos-g">${t} (${l.length})</div>` + ord(l).map(fila).join('') : '';
+  $('#pos-list').innerHTML = (grupo('🎉 Asisten', si) + grupo('😔 No van', no) + grupo('⏳ Sin responder', sin)) || '<div class="loading">Nadie ha respondido todavía.</div>';
+}
+$('#ac-posada').onclick = abrirPosada;
+$('#pos-cerrar').onclick = () => { $('#pos-modal').hidden = true; };
+$('#pos-link').onclick = async () => {
+  try{ await navigator.clipboard.writeText(POSADA_URL); toast('Link copiado. Pégalo en el grupo de WhatsApp.'); }
+  catch(e){ toast(POSADA_URL); }
+};
+$('#pos-print').onclick = () => {
+  const { si, no, sin } = datosPosada();
+  const ord = l => l.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  const tabla = (t, l, msg) => `<h3 style="margin:16px 0 6px">${t} (${l.length})</h3>` + (l.length ? `<table class="rp-tab"><thead><tr><th style="width:6%">#</th><th style="width:12%">Gafete</th><th>Nombre</th><th style="width:18%">Sucursal</th>${msg ? '<th style="width:36%">Mensaje</th>' : ''}</tr></thead><tbody>${ord(l).map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.gafete || '—')}</td><td>${esc(r.nombre)}</td><td>${esc(r.sucursal || '')}</td>${msg ? `<td>${esc(r.mensaje || '')}</td>` : ''}</tr>`).join('')}</tbody></table>` : '<p class="rp-nada">Nadie.</p>');
+  imprimirDoc(encabezadoDoc('Posada Navideña · Confirmaciones' + (state.psuc !== 'Todas' ? ' · ' + state.psuc : '')) +
+    `<p>16 de diciembre, 8:00 p.m. · Hacienda Santa Mónica. Asisten: <b>${si.length}</b> · No van: <b>${no.length}</b> · Sin responder: <b>${sin.length}</b></p>` +
+    tabla('Asisten', si, true) + tabla('No van', no, true) + tabla('Sin responder', sin, false));
+};
 $('#irEmp').onclick = abrirEmpleado;
 $('#irInc').onclick = abrirIncidencias;
 $('#irHoy').onclick = () => conAcceso(abrirHoy, 'Hoy');
