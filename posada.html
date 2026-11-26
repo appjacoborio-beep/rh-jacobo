@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Posada Jacobo · versión 2026-11-25d -->
+<!-- Posada Jacobo · versión 2026-11-26 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -71,6 +71,7 @@ main{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:28px 16px
 .ya{text-align:center;font-size:20px;color:var(--oro2);padding:12px}
 
 .acciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.nota-didi{grid-column:1/-1;text-align:center;font-size:12px;color:var(--sec);margin-top:-2px}
 .btn2{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 10px;font-weight:650;font-size:14.5px;text-decoration:none;color:var(--crema);
   background:rgba(255,255,255,.08);border:1px solid rgba(217,183,120,.45);transition:background .25s,transform .12s}
 .btn2:active{transform:scale(.97)}
@@ -103,7 +104,7 @@ main{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:28px 16px
 .cambiar{margin-top:14px;border:0;background:none;color:var(--rojo);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .pie{text-align:center;color:var(--sec);font-size:12px;margin-top:24px}
 #confeti{position:fixed;inset:0;pointer-events:none;z-index:20}
-#musica{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:15;width:50px;height:50px;border-radius:50%;border:1px solid rgba(217,183,120,.55);
+#musica{position:fixed;right:14px;top:calc(14px + env(safe-area-inset-top));z-index:15;width:50px;height:50px;border-radius:50%;border:1px solid rgba(217,183,120,.55);
   background:rgba(23,51,36,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--oro2);font-size:22px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 #musica.suena{animation:latido 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
@@ -142,6 +143,9 @@ main{position:relative;z-index:2;max-width:520px;margin:0 auto;padding:28px 16px
   <div class="acciones">
     <a class="btn2" id="mapa" target="_blank" rel="noopener">📍 Cómo llegar</a>
     <a class="btn2" id="cal" target="_blank" rel="noopener">📅 A mi calendario</a>
+    <a class="btn2" id="uber" target="_blank" rel="noopener">🚗 Pedir Uber</a>
+    <a class="btn2" id="didi" href="#">🚕 Pedir DiDi</a>
+    <p class="nota-didi">En DiDi la dirección se copia: solo pégala en "¿A dónde vas?"</p>
   </div>
 
   <section class="conf" id="conf">
@@ -197,6 +201,22 @@ $('#abrir').addEventListener('click', tocar);
 
 /* ---------- Enlaces ---------- */
 $('#mapa').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Hacienda Santa Mónica Mesa de Otay Tijuana');
+// Uber abre la app con el destino ya puesto. DiDi no permite eso desde un link: se copia la dirección y se abre la app.
+const DESTINO = { lat: 32.5165322, lng: -116.9725376, nombre: 'Hacienda Santa Mónica', dir: 'Hacienda Santa Mónica, Vía Rápida Oriente, Mesa de Otay, Guadalupe Victoria, 22426 Tijuana, B.C.' };
+$('#uber').href = 'https://m.uber.com/ul/?action=setPickup&pickup=my_location' +
+  '&dropoff[latitude]=' + DESTINO.lat + '&dropoff[longitude]=' + DESTINO.lng +
+  '&dropoff[nickname]=' + encodeURIComponent(DESTINO.nombre) + '&dropoff[formatted_address]=' + encodeURIComponent(DESTINO.dir);
+$('#didi').onclick = async e => {
+  e.preventDefault();
+  const b = $('#didi');
+  try{ await navigator.clipboard.writeText(DESTINO.dir); b.textContent = '📋 Dirección copiada'; }catch(err){ b.textContent = '🚕 Abriendo DiDi'; }
+  setTimeout(() => {
+    location.href = /android/i.test(navigator.userAgent)
+      ? 'intent://#Intent;package=com.didiglobal.passenger;S.browser_fallback_url=' + encodeURIComponent('https://play.google.com/store/apps/details?id=com.didiglobal.passenger') + ';end'
+      : 'https://apps.apple.com/mx/app/didi-rider/id1362398401';
+  }, 900);
+  setTimeout(() => { b.textContent = '🚕 Pedir DiDi'; }, 4000);
+};
 $('#cal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent('Posada Navideña Jacobo') +
   '&dates=20261217T040000Z/20261217T100000Z&location=' + encodeURIComponent(LUGAR) + '&details=' + encodeURIComponent('Horario: 8:00 p.m. a 2:00 a.m.');
 
